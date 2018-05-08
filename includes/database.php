@@ -7,10 +7,11 @@ class Database
 {
 	protected static $db;
 	protected static $host;
-	protected static $dbname;
+	protected static $dbname = "/home/nucc1/pmacct.sqlite";
 	protected static $username;
 	protected static $password;
-	
+
+	protected static $engine = "sqlite"; //what PDO engine/database is in use? Set this variable as needed
 	/**
 	 * Set the details used to connect to the database
 	 * @param	string	Database server name
@@ -34,7 +35,11 @@ class Database
 	{
 		if (self::$db == null)
 		{
-			self::$db = new PDO('mysql:host=' . self::$host . ';dbname=' . self::$dbname, self::$username, self::$password);
+		    if (self::$engine === "sqlite") {
+		        self::$db = new PDO(self::$engine . ":{self::$dbname}");
+            }else {
+                self::$db = new PDO(self::$engine . ':host=' . self::$host . ';dbname=' . self::$dbname, self::$username, self::$password);
+            }
 			self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
 		
