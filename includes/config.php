@@ -5,10 +5,11 @@ class Config
 {
 	static $database = array(
 		'host' => 'localhost',
-		'name' => 'pmacct',
+		'dbname' => '/home/nucc1/pmacct.sqlite',
 		'username' => 'root',
 		'password' => 'password',
 		'prefix' => 'acct_v7_',
+        'engine' => 'sqlite'
 	);
 	
 	// IPs to include in the statistics

@@ -7,7 +7,7 @@ class Database
 {
 	protected static $db;
 	protected static $host;
-	protected static $dbname = "/home/nucc1/pmacct.sqlite";
+	protected static $dbname ;
 	protected static $username;
 	protected static $password;
 
@@ -19,12 +19,13 @@ class Database
 	 * @param	string	Username
 	 * @param	string	Password
 	 */
-	public static function setDetails($host, $dbname, $username, $password)
+	public static function setDetails($host, $dbname, $username, $password, $engine='sqlite')
 	{
 		self::$host = $host;
 		self::$dbname = $dbname;
 		self::$username = $username;
 		self::$password = $password;
+		self::$engine = $engine;
 	}
 	
 	/**
@@ -36,7 +37,7 @@ class Database
 		if (self::$db == null)
 		{
 		    if (self::$engine === "sqlite") {
-		        self::$db = new PDO(self::$engine . ":".self::$dbname);
+		        self::$db = new PDO(self::$engine . ":" . self::$dbname);
             }else {
                 self::$db = new PDO(self::$engine . ':host=' . self::$host . ';dbname=' . self::$dbname, self::$username, self::$password);
             }
@@ -56,5 +57,5 @@ class Database
 }
 
 // Set details based on config
-Database::setDetails(Config::$database['host'], Config::$database['name'], Config::$database['username'], Config::$database['password']);
+Database::setDetails(Config::$database['host'], Config::$database['dbname'], Config::$database['username'], Config::$database['password']);
 ?>
