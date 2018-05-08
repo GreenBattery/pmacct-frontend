@@ -36,7 +36,7 @@ class Database
 		if (self::$db == null)
 		{
 		    if (self::$engine === "sqlite") {
-		        self::$db = new PDO(self::$engine . ":{self::$dbname}");
+		        self::$db = new PDO(self::$engine . ":".self::$dbname);
             }else {
                 self::$db = new PDO(self::$engine . ':host=' . self::$host . ';dbname=' . self::$dbname, self::$username, self::$password);
             }
