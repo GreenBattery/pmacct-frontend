@@ -43,7 +43,7 @@ class Data_Summary
 	private static function summary($start_date, $end_date)
 	{
 	    var_dump(Config::$localSubnet);
-	    $addresses = \IPLib\Address\IPv4::fromString(Config::$localSubnet);
+	    $addresses = \IPLib\Range\Subnet::fromString(Config::$localSubnet);
 
 	    var_dump($addresses);
 
