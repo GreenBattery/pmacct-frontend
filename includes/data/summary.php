@@ -4,6 +4,7 @@
  * @author Daniel15 <daniel at dan.cx>
  */
 
+require_once(dirname(dirname(__FILE__)) . '/ip.lib.php');
 class Data_Summary
 {
 	/**
@@ -40,7 +41,19 @@ class Data_Summary
 	 */
 	private static function summary($start_date, $end_date)
 	{
+        $block = IPBlock::create(Config::$localSubnet);
+        $i = 0; //use this counter to avoid expanding more than 256 IP addresses.
+        $addresses = array(); //hold list of IPs. we set hard limit of 256 addresses.
+        foreach ($block as $ip){
+            $addresses[] = $ip;
+            $i++;
 
+            if ($i >=255){
+                break;
+            }
+        }
+
+        var_dump($addresses);
 
 		$query = Database::getDB()->prepare('
 			SELECT ip, SUM(bytes_out) bytes_out, SUM(bytes_in) bytes_in
