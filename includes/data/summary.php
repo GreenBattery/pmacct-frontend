@@ -5,8 +5,7 @@
  */
 
 
-var_dump(dirname(dirname(__FILE__)));
-require_once("./ip-lib/ip-lib.php");
+require_once(dirname(dirname(__FILE__)) . "/ip-lib/ip-lib.php");
 class Data_Summary
 {
 	/**
