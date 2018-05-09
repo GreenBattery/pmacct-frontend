@@ -4,7 +4,7 @@
  * @author Daniel15 <daniel at dan.cx>
  */
 
-require_once("../ip-lib/ip-lib.php");
+require_once("./ip-lib/ip-lib.php");
 class Data_Summary
 {
 	/**
