@@ -8,7 +8,7 @@ class Config
 		'dbname' => '/home/nucc1/pmacct.sqlite',
 		'username' => 'root',
 		'password' => 'password',
-		'prefix' => 'acct_v7_',
+		'prefix' => 'acct_v9',
         'engine' => 'sqlite'
 	);
 	
