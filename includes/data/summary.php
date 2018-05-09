@@ -3,6 +3,8 @@
  * Data model for retriving a summary of statistics
  * @author Daniel15 <daniel at dan.cx>
  */
+
+require_once("../ip-lib/ip-lib.php");
 class Data_Summary
 {
 	/**
@@ -39,6 +41,10 @@ class Data_Summary
 	 */
 	private static function summary($start_date, $end_date)
 	{
+	    $addresses = \IPLib\Address\IPv4::fromString(Config::$localSubnet);
+
+	    var_dump($addresses);
+
 		$query = Database::getDB()->prepare('
 			SELECT ip, SUM(bytes_out) bytes_out, SUM(bytes_in) bytes_in
 			FROM ' . Config::$database['prefix'] . 'combined
