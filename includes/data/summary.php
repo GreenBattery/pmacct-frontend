@@ -4,6 +4,8 @@
  * @author Daniel15 <daniel at dan.cx>
  */
 
+
+var_dump(dirname(dirname(__FILE__)));
 require_once("./ip-lib/ip-lib.php");
 class Data_Summary
 {
