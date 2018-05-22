@@ -45,7 +45,7 @@ class Data_Summary
         $i = 0; //use this counter to avoid expanding more than 256 IP addresses.
         $addresses = array(); //hold list of IPs. we set hard limit of 256 addresses.
         foreach ($block as $ip){
-            $addresses[] = $ip;
+            $addresses[] = (string) $ip;
             $i++;
 
             if ($i >=255){
