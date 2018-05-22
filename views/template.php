@@ -9,7 +9,7 @@
 <body<?php if (!empty($this->page_id)) echo ' id="' . $this->page_id . '"'; ?>>
 	<?php echo $this->body ?>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script src="js/zepto.min.js"></script>
 	<script src="js/highcharts.js"></script>
 	<script src="js/scripts.js"></script>
 </body>
