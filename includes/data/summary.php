@@ -68,8 +68,8 @@ class Data_Summary
 		$db = Database::getDB();
 
 		$sql = "
-			SELECT ip_dst, SUM(bytes) AS bytes_in, 
-			FROM ' . $table_in . '
+			SELECT ip_dst, SUM(bytes) AS bytes_in
+			FROM   $table_in 
 			WHERE stamp_inserted BETWEEN $start_date AND $end_date
 			GROUP BY ip_dst
 			ORDER BY bytes_in DESC";
