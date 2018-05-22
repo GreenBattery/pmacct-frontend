@@ -30,7 +30,8 @@ class Data_Summary
 		// Calculate end of this month
         $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
 
-		$end_date = mktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
+        //get the epoch in localtime?
+		$end_date = gmmktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
 		
 		return self::summary($date, $end_date);
 	}
@@ -67,7 +68,7 @@ class Data_Summary
 		$db = Database::getDB();
 
 		$sql = "
-			SELECT ip_dst, SUM(bytes) bytes_in, 
+			SELECT ip_dst, SUM(bytes) AS bytes_in, 
 			FROM ' . $table_in . '
 			WHERE stamp_inserted BETWEEN $start_date AND $end_date
 			GROUP BY ip_dst
