@@ -28,7 +28,9 @@ class Data_Summary
 	public static function month($date)
 	{
 		// Calculate end of this month
-		$end_date = mktime(23, 59, 59, date('m', $date) + 1, 0, date('Y', $date));
+        $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
+
+		$end_date = mktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
 		
 		return self::summary($date, $end_date);
 	}
