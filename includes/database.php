@@ -11,7 +11,7 @@ class Database
 	protected static $username;
 	protected static $password;
 
-	protected static $engine = "sqlite"; //what PDO engine/database is in use? Set this variable as needed
+	protected static $engine = "mysql"; //what PDO engine/database is in use? Set this variable as needed
 	/**
 	 * Set the details used to connect to the database
 	 * @param	string	Database server name
@@ -19,7 +19,7 @@ class Database
 	 * @param	string	Username
 	 * @param	string	Password
 	 */
-	public static function setDetails($host, $dbname, $username, $password, $engine='sqlite')
+	public static function setDetails($host, $dbname, $username, $password, $engine='mysql')
 	{
 		self::$host = $host;
 		self::$dbname = $dbname;

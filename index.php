@@ -4,7 +4,9 @@
 
 require __DIR__ . '/includes/core.php';
 
-$start_date = mktime(0,0,0, date('n'), 1, date('Y')); //unix time for start date.
+//unix time for midnight on first day of the month (in UTC)
+$start_date = mktime(0,0,0, date('n'), 1, date('Y'));
+
 var_dump($start_date);
 
 $data = Data_Summary::month($start_date);

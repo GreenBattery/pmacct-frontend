@@ -53,14 +53,18 @@ class Data_Summary
             }
         }
 
-        var_dump($addresses);
+        //format the list of IP addresses in our /24 subnet for use in mysql IN clause.
+        $in = "(" . implode(",",$addresses) . ")";
+
+        //make the table name in _mmYY format. for inbound table
+        $table_in = "inbound_" + gmdate("mY", $start_date);
 
 		$query = Database::getDB()->prepare('
-			SELECT ip, SUM(bytes_out) bytes_out, SUM(bytes_in) bytes_in
-			FROM ' . Config::$database['prefix'] . 'combined
-			WHERE date BETWEEN :start_date AND :end_date
+			SELECT ip_dst, SUM(bytes) bytes_in, 
+			FROM ' . $table_in . '
+			WHERE stamp_inserted BETWEEN :start_date AND :end_date
 			GROUP BY ip
-			ORDER BY SUM(bytes_out) + SUM(bytes_in) DESC');
+			ORDER BY bytes_in DESC');
 			
 		$query->execute(array(
 			'start_date' => Database::date($start_date),
