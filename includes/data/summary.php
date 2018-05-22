@@ -90,17 +90,7 @@ class Data_Summary
 		{
 		    var_dump($row);
 
-
-			// Check if this IP is on the list of IPs that should be shown
-			if (!empty(Config::$include_ips) && !in_array($row->ip, Config::$include_ips))
-				continue;
-			
-			$row->bytes_total = $row->bytes_in + $row->bytes_out;
-			$data[] = $row;
-			
-			$totals->bytes_in += $row->bytes_in;
-			$totals->bytes_out += $row->bytes_out;
-			$totals->bytes_total += $row->bytes_total;
+		    
 		}
 		
 		return (object)array(
