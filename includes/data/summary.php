@@ -70,7 +70,7 @@ class Data_Summary
 		$sql = "
 			SELECT ip_dst, SUM(bytes) AS bytes_in
 			FROM   $table_in 
-			WHERE stamp_inserted BETWEEN $start_date AND $end_date
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME($start_date) AND FROM_UNIXTIME($end_date)
 			GROUP BY ip_dst
 			ORDER BY bytes_in DESC";
 			
