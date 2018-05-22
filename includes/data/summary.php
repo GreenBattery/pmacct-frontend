@@ -62,18 +62,17 @@ class Data_Summary
         var_dump($table_in);
 
         //get a database connection via PDO object
-		$db = Database::getDB()->prepare('
+		$db = Database::getDB();
+
+		$sql = '
 			SELECT ip_dst, SUM(bytes) bytes_in, 
 			FROM ' . $table_in . '
 			WHERE stamp_inserted BETWEEN :start_date AND :end_date
 			GROUP BY ip
-			ORDER BY bytes_in DESC');
+			ORDER BY bytes_in DESC';
 			
-		$results = $db->execute(array(
-			'start_date' => Database::date($start_date),
-			'end_date' => Database::date($end_date),
-			//'end_date' => Database::date(strtotime('midnight tomorrow - 1 second')),
-		));
+		$results = $db->query($sql);
+		
 
 		syslog(LOG_NOTICE, "stat: summary query returned: " . $results . " items");
 		
