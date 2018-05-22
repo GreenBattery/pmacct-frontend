@@ -4,8 +4,12 @@
 
 require __DIR__ . '/includes/core.php';
 
+
+$tz = date_default_timezone_get(); //get timezone.
+
 //unix time for midnight on first day of the month (in UTC)
-$start_date = mktime(0,0,0, date('n'), 1, date('Y'));
+$start_date = gmmktime(0,0,0, date('n'), 1, date('Y'));
+
 
 var_dump($start_date);
 
