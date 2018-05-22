@@ -64,15 +64,15 @@ class Data_Summary
         //get a database connection via PDO object
 		$db = Database::getDB();
 
-		$sql = '
+		$sql = "
 			SELECT ip_dst, SUM(bytes) bytes_in, 
 			FROM ' . $table_in . '
-			WHERE stamp_inserted BETWEEN :start_date AND :end_date
+			WHERE stamp_inserted BETWEEN $start_date AND $end_date
 			GROUP BY ip
-			ORDER BY bytes_in DESC';
+			ORDER BY bytes_in DESC";
 			
 		$results = $db->query($sql);
-		
+
 
 		syslog(LOG_NOTICE, "stat: summary query returned: " . $results . " items");
 		
