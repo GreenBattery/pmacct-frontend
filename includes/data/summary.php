@@ -90,10 +90,10 @@ class Data_Summary
 		{
 		    var_dump($row);
 
-		    
+
 		}
 		
-		return (object)array(
+		return array(
 			'data' => $data,
 			'totals' => $totals
 		);
