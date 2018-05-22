@@ -77,7 +77,7 @@ class Data_Summary
 		$results = $db->query($sql);
 
 
-		syslog(LOG_NOTICE, "stat: summary query returned: " . $results . " items");
+		//syslog(LOG_NOTICE, "stat: summary query returned: " . $results . " items");
 		
 		$data = array();
 		$totals = (object)array(
