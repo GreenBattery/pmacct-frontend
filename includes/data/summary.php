@@ -59,6 +59,8 @@ class Data_Summary
         //make the table name in _mmYY format. for inbound table
         $table_in = "inbound_" + gmdate("mY", $start_date);
 
+        var_dump($table_in);
+
 		$query = Database::getDB()->prepare('
 			SELECT ip_dst, SUM(bytes) bytes_in, 
 			FROM ' . $table_in . '
