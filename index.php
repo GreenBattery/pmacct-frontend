@@ -11,9 +11,11 @@ $tz = date_default_timezone_get(); //get timezone.
 $start_date = gmmktime(0,0,0, date('n'), 1, date('Y'));
 
 
-var_dump($start_date);
+
 
 $data = Data_Summary::month($start_date);
+
+var_dump($data['data']);
 
 var_dump("dates|: " . $start_date . "__++++___:" . $data);
 

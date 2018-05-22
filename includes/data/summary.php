@@ -88,7 +88,8 @@ class Data_Summary
 		
 		foreach ($results as $row)
 		{
-		    var_dump($row);
+		    //var_dump($row);
+		    $data[] = $row;
 
 
 		}
