@@ -39,6 +39,7 @@ class Database
 		    if (self::$engine === "sqlite") {
 		        self::$db = new PDO(self::$engine . ":" . self::$dbname);
             }else {
+		        syslog(LOG_NOTICE, "stats: using mysql connection");
                 self::$db = new PDO(self::$engine . ':host=' . self::$host . ';dbname=' . self::$dbname, self::$username, self::$password);
             }
 			self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
