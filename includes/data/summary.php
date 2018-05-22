@@ -74,6 +74,8 @@ class Data_Summary
 			'end_date' => Database::date($end_date),
 			//'end_date' => Database::date(strtotime('midnight tomorrow - 1 second')),
 		));
+
+		syslog(LOG_NOTICE, "stat: summary query returned: " . $results . " items");
 		
 		$data = array();
 		$totals = (object)array(
@@ -85,7 +87,7 @@ class Data_Summary
 		foreach ($results as $row)
 		{
 		    var_dump($row);
-		    
+
 
 			// Check if this IP is on the list of IPs that should be shown
 			if (!empty(Config::$include_ips) && !in_array($row->ip, Config::$include_ips))
