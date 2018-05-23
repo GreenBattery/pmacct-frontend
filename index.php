@@ -17,7 +17,7 @@ $data = Data_Summary::month($start_date);
 
 var_dump($data['data']);
 
-var_dump("dates|: " . $start_date . "__++++___:" . $data);
+var_dump("dates|: " . $start_date . "__++++___:");
 
 View::factory('summary')
     ->set('date', $start_date)
