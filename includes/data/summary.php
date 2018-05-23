@@ -82,7 +82,7 @@ class Data_Summary
 		//syslog(LOG_NOTICE, "stat: summary query returned: " . $results . " items");
 		
 		$data = array();
-		$totals = (object)array(
+		$totals = array(
 			'bytes_out' => 0,
 			'bytes_in' => 0,
 			'bytes_total' => 0,
