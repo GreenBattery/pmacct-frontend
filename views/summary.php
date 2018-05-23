@@ -24,7 +24,7 @@ foreach ($this->data['data'] as $ip=>$row)
 {
 
     var_dump($row);
-    $row['bytes_total'] = (int) $row['bytes_in'] + $row['bytes_out'];
+    $row['bytes_total'] = (int) ($row['bytes_in'] ?? 0) + ($row['bytes_out'] ?? 0);
 	echo '
 			<tr data-in="', $row['bytes_in'], '" data-out="', $row['bytes_out'], '" data-total="', $row['bytes_total'], '">
 				<td><a href="', date('Y-m-d', $this->date), '/', $ip , '/">', $ip, '</a></td>
