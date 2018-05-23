@@ -1,27 +1,78 @@
+
 ! pmacctd configuration
+!
+!
+!
 daemonize: true
 pidfile: /var/run/pmacctd.pid
 syslog: daemon
 
-interface: eth0
-aggregate[inbound]: dst_host
-aggregate[outbound]: src_host
-aggregate_filter[inbound]: dst net 10.0.0.0/8
-aggregate_filter[outbound]: src net 10.0.0.0/8
-plugins: mysql[inbound], mysql[outbound]
-sql_table[inbound]: acct_v7_in
-sql_table[outbound]: acct_v7_out
+! pcap filter for matching traffic we care about.
+! I only support IPv4 at the moment, so my filter says:
+! any traffic that doesn't have both source and destination on my LAN.
+! you may notice that this does not exclude IPv6 traffic, but since there is no
+! IPv6 services really running on my network, this should be minimal noise in the database.
+pcap_filter: not (src net 192.168.1.0/24 and dst net 192.168.1.0/24)
 
-! storage methods
+! specify the interface name. I used my LAN interface
+interface: enp4s0
+
+! I specify snaplen 1000 bytes which is a bit overkill but ensures nearly the entire frame is captured.
+snaplen: 1000
+
+!use mysql, with different tables for inbound (download) and outbound (upload) stats
+plugins: mysql[in], mysql[out]
+
+
+! aggregate command tells pmacct what columns you're interested in for accounting purposes.
+! inbound, we want source IP (remote) dest IP (LAN), src port (usually well-known service) and protocol.
+aggregate[in]: src_host, src_port, dst_host, proto
+
+!note that these rules here keep hourly statistics for each unique combination of the fields in aggregation
+! including the timeslot which for our case as said above, is hourly.
+
+
+! inbound filter is basically any traffic destined for our LAN subnet that isn't also originating from LAN.
+aggregate_filter[in]: dst net 192.168.1.0/24 and not src net 192.168.1.0/24
+
+
+! for outbound traffic, we don't care about ephemeral source port.
+aggregate[out]: src_host, dst_host, dst_port, proto, src_mac
+
+!similar logic as inbound. traffic destined for outside our LAN.
+aggregate_filter[out]: src net 192.168.1.0/24 and not dst net 192.168.1.0/24
+
+
+! sql defaults here.
 sql_host: localhost
-sql_user: pmacct
-sql_db: pmacct
-sql_passwd: password
-sql_refresh_time: 300
-sql_table_version: 7
-! accumulate values in each row for up to an hour
-sql_history: 1h
-sql_history_roundoff: h
-! in case of emergency, log to this file
-sql_recovery_logfile: /var/lib/pmacct/recovery_log
+sql_user: router
+sql_passwd: router
+sql_table_schema: /home/nucc1/usage.schema
 
+!I use table version 2 because it gives me all the data I need.
+sql_table_version: 2
+
+
+
+! now specify the db and table schema for the inbound/outbound stats
+sql_db[in]: bandwidth
+sql_table_schema[in]: /home/nucc1/inbound.schema
+
+sql_db[out]: bandwidth
+sql_table_schema[out]: /home/nucc1/outbound.schema
+
+sql_table[in]: inbound_%m%Y
+sql_table[out]: outbound_%m%Y
+
+
+
+! update the db every minute
+sql_refresh_time[in]: 60
+sql_refresh_time[out]: 60
+
+
+sql_history[in]: 1h
+sql_history[out]: 1h
+! create new rows on the minute, hour, day boundaries
+sql_history_roundoff[in]: h
+sql_history_roundoff[out]: h
