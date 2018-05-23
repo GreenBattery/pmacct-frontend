@@ -17,7 +17,7 @@ class Data_Host
 	    var_dump($date);
 		// Calculate the last second of this day
 		$start_date = $date;
-		$end_date = mktime(23, 59, 59, date('m', $date), date('d', $date), date('Y', $date));
+		$end_date = mktime(23, 59, 59, date('M', $date), date('d', $date), date('Y', $date));
 		
 		$query = Database::getDB()->prepare('
 			SELECT ip, UNIX_TIMESTAMP(date) AS date, bytes_out, bytes_in
