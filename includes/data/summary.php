@@ -61,17 +61,19 @@ class Data_Summary
 
         //make the table name in _mmYY format. for inbound table
         $table_in = "inbound_" . gmdate("mY", $start_date);
+        $table_out = "outbound_" . gmdate("mY", $start_date);
 
         var_dump($table_in);
 
         //get a database connection via PDO object
 		$db = Database::getDB();
 
+		//sql for fetching inbound/download stats.
 		$sql = "
-			SELECT ip_dst, SUM(bytes) AS bytes_in
+			SELECT ip_dst AS ip, SUM(bytes) AS bytes_in
 			FROM   $table_in 
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME($start_date) AND FROM_UNIXTIME($end_date)
-			GROUP BY ip_dst
+			GROUP BY ip
 			ORDER BY bytes_in DESC";
 			
 		$results = $db->query($sql);
@@ -88,12 +90,32 @@ class Data_Summary
 		
 		foreach ($results as $row)
 		{
-		    //var_dump($row);
-		    $data[] = $row;
+		    $data[$row['ip']]['bytes_in'] = $row['bytes_in'];
+		    $totals['bytes_in'] += (int) $row['bytes_in'];
 
 
 		}
-		
+
+		//sql for fetching outbound/upload stats.
+        $sql = "
+			SELECT ip_src AS ip, SUM(bytes) AS bytes_out
+			FROM   $table_out
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME($start_date) AND FROM_UNIXTIME($end_date)
+			GROUP BY ip";
+
+        $results = $db->query($sql);
+
+        //process returned outbound stats.
+        foreach ($results as $row)
+        {
+            //var_dump($row);
+            $data[$row['ip']]['bytes_out'] = $row['bytes_out'];
+            $totals['bytes_out'] += (int) $row['bytes_out'];
+
+
+        }
+
+		$totals['bytes_total'] = $totals['bytes_in'] + $totals['bytes_out'];
 		return array(
 			'data' => $data,
 			'totals' => $totals
