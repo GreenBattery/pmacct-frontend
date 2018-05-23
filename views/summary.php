@@ -1,4 +1,5 @@
 <div id="summary_container">
+    <?php var_dump($this->data); ?>
 	<table id="summary">
 		<thead>
 			<tr>
