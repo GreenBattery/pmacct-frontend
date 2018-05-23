@@ -5,4 +5,4 @@ $this->page_id = 'summary-month';
 
 <?php require('summary.php'); ?>
 
-<div id="byday"></div>
+<div id="byday">stats by day for this month</div>
