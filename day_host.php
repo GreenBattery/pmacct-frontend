@@ -12,7 +12,7 @@ $month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
 $day = !empty($_GET['day']) ? (int) $_GET['day'] : date('d');
 $ip = $_GET['ip'];
 
-$date = mktime(0, 0, 0, $month, $day, $year);
+$date = gmmktime(0, 0, 0, $month, $day, $year);
 
 $data = Data_Host::day($ip, $date);
 
