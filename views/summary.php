@@ -23,7 +23,7 @@ foreach ($this->data['data'] as $ip=>$row)
 {
     $row['bytes_total'] = (int) ($row['bytes_in'] ?? 0) + ($row['bytes_out'] ?? 0);
 	echo '
-			<tr data-in="', $row['bytes_in'], '" data-out="', $row['bytes_out'], '" data-total="', $row['bytes_total'], '">
+			<tr data-in="', $row['bytes_in'] ?? 0, '" data-out="', $row['bytes_out'] ?? 0, '" data-total="', $row['bytes_total'], '">
 				<td><a href="', date('Y-m-d', $this->date), '/', $ip , '/">', $ip, '</a></td>
 				<td><a href="', date('Y-m-d', $this->date), '/', $ip , '/">', gethostbyaddr($ip), '</a></td>
 				<td>', Format::decimal_size($row['bytes_in'] ?? 0), '</td>
