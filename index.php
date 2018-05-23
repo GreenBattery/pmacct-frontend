@@ -15,7 +15,7 @@ $start_date = gmmktime(0,0,0, date('n'), 1, date('Y'));
 
 $data = Data_Summary::month($start_date);
 
-var_dump($data['data']);
+var_dump($data);
 
 var_dump("dates|: " . $start_date . "__++++___:");
 
