@@ -13,6 +13,8 @@ class Data_Host
 	 */
 	public static function day($ip, $date)
 	{
+	    var_dump($ip);
+	    var_dump($date);
 		// Calculate the last second of this day
 		$start_date = $date;
 		$end_date = mktime(23, 59, 59, date('m', $date), date('d', $date), date('Y', $date));
