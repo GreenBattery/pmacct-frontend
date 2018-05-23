@@ -18,8 +18,9 @@ class Data_Host
 		// Calculate the last second of this day
 		$start_date = $date;
 
-		$end_date = gmmktime(23, 59, 59, date('m', $date), date('d', $date), date('Y', $date));
-
+		//assuming start date is midnight exactly just add 86399 seconds.
+		$end_date = $date + 86399;
+		
 		var_dump($end_date);
 
 		$query = Database::getDB()->prepare('
