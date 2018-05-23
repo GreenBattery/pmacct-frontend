@@ -10,7 +10,7 @@ require __DIR__ . '/includes/core.php';
 $year = !empty($_GET['year']) ? (int) $_GET['year'] : date('Y');
 $month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
 
-$start_date = mktime(0, 0, 0, $month, 1, $year);
+$start_date = gmmktime(0, 0, 0, $month, 1, $year);
 
 $data = Data_Summary::month_by_day($start_date);
 

@@ -20,7 +20,7 @@ class Data_Host
 
 		//assuming start date is midnight exactly just add 86399 seconds.
 		$end_date = $date + 86399;
-		
+
 		var_dump($end_date);
 
 		$query = Database::getDB()->prepare('
