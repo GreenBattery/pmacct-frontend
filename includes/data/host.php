@@ -32,7 +32,7 @@ class Data_Host
 			FROM ' . $table_in. '
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
 				AND ip_dst = :ip
-			ORDER BY date DESC');
+			ORDER BY stamp_inserted DESC');
 			
 		$query->execute(array(
 			'start_date' => $start_date,
