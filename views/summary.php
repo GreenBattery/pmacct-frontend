@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-<H1>Summary for the month of <?= date("M, Y", $this->date); ?></H1>
-=======
 <div class="page-header">
     <H1>Summary for the month of <?= date("M, Y", $this->date); ?></H1>
 </div>
->>>>>>> dev
 <div id="summary_container">
 	<table id="summary">
 		<thead>
