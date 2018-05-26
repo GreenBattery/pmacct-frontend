@@ -1,5 +1,6 @@
 <?php
 $this->page_id = 'host-day';
+var_dump($data);
 ?>
 <h1>Statistics for <?php echo $this->ip; ?> (<?php echo gethostbyaddr($this->ip); ?>) on <?php echo date('Y-m-d', $this->date); ?></h1>
 
@@ -17,9 +18,9 @@ $this->page_id = 'host-day';
 	<tfoot>
 		<tr>
 			<th>Totals</th>
-			<td><?php echo Format::decimal_size($this->data->totals->bytes_in); ?></td>
-			<td><?php echo Format::decimal_size($this->data->totals->bytes_out); ?></td>
-			<td><?php echo Format::decimal_size($this->data->totals->bytes_total); ?></td>
+			<td><?php echo Format::decimal_size($this->data['totals']['bytes_in']); ?></td>
+			<td><?php echo Format::decimal_size($this->data['totals']['bytes_out']); ?></td>
+			<td><?php echo Format::decimal_size($this->data['totals']['bytes_total']); ?></td>
 		</tr>
 	</tfoot>
 	<tbody>
