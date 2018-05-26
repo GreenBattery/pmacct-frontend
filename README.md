@@ -8,9 +8,12 @@ If using Apache, ensure you have mod_rewrite installed, and AllowOverride set to
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 Requires php-gmp, php-mysql.
  
 =======
+=======
+>>>>>>> dev
 =======
 >>>>>>> dev
 Requires PHP 7 with the following modules: php-gmp, php-mysql.

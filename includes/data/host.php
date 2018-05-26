@@ -90,7 +90,11 @@ class Data_Host
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             $data[$h]['bytes_total'] += $row['bytes_out']; //add outbound bytes to totals for this hour
+=======
+            $data[$h]['bytes_total'] =  $row['bytes_out'] + ($data[$h]['bytes_total'] ?? 0); //add outbound bytes to totals for this hour
+>>>>>>> dev
 =======
             $data[$h]['bytes_total'] =  $row['bytes_out'] + ($data[$h]['bytes_total'] ?? 0); //add outbound bytes to totals for this hour
 >>>>>>> dev
