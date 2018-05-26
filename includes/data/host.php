@@ -30,8 +30,8 @@ class Data_Host
 		$query = Database::getDB()->prepare('
 			SELECT ip_dst as ip, stamp_inserted as hour, bytes as bytes_in
 			FROM ' . $table_in. '
-			WHERE hour BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-				AND ip = :ip
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+				AND ip_dst = :ip
 			ORDER BY date DESC');
 			
 		$query->execute(array(
