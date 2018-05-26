@@ -7,7 +7,7 @@
 require __DIR__ . '/includes/core.php';
 
 // get date and IP from query string if available.
-$date = strtotime($_GET['date']) ?? strtotime("today"); //make a unix timestamp of it.
+$date = strtotime($_GET['date'] . " UTC") ?? strtotime("today"); //make a unix timestamp of it.
 //if no IP supplied, should show all hosts
 $ip = $_GET['ip']; //should validate this?
 
