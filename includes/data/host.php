@@ -33,7 +33,7 @@ class Data_Host
 			FROM ' . $table_in. '
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
 				AND ip_dst = :ip GROUP BY hour
-			ORDER BY stamp_inserted DESC');
+			ORDER BY stamp_inserted ASC');
 			
 		$query->execute(array(
 			':start_date' => $start_date,
@@ -57,7 +57,8 @@ class Data_Host
 
 		    var_dump($h);
 
-			$data[$h] = array(); // each hour will be an array of bytes in and bout.
+			$data[$h] = array(); // each hour will be an array of bytes in and out.
+            
             $date[$h]['bytes_in'] = $row['bytes_in'];
 			
 			$totals['bytes_in'] += $row['bytes_in'];
