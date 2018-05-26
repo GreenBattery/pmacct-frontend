@@ -29,7 +29,7 @@ class Data_Host
         $table_out = "outbound_" . date("mY", $start_date);
 
 		$query = Database::getDB()->prepare('
-			SELECT ip_dst as ip, stamp_inserted as hour, bytes as bytes_in
+			SELECT ip_dst as ip, stamp_inserted as hour, SUM(bytes) as bytes_in
 			FROM ' . $table_in. '
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
 				AND ip_dst = :ip GROUP BY hour
