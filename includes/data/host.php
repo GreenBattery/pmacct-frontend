@@ -25,8 +25,8 @@ class Data_Host
 		var_dump($end_date);
 
         //make the table name in _mmYY format. for inbound table
-        $table_in = "inbound_" . gmdate("mY", $start_date);
-        $table_out = "outbound_" . gmdate("mY", $start_date);
+        $table_in = "inbound_" . date("mY", $start_date);
+        $table_out = "outbound_" . date("mY", $start_date);
 
 		$query = Database::getDB()->prepare('
 			SELECT ip_dst as ip, stamp_inserted as hour, bytes as bytes_in
