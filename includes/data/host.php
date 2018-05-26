@@ -22,7 +22,7 @@ class Data_Host
 		//assuming start date is midnight exactly just add 86399 seconds.
 		$end_date = $date + 86399;
 
-		var_dump($end_date);
+		var_dump("end: " . $end_date);
 
         //make the table name in _mmYY format. for inbound table
         $table_in = "inbound_" . date("mY", $start_date);
