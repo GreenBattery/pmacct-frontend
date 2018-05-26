@@ -5,6 +5,7 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/ip.lib.php');
+
 class Data_Summary
 {
 	/**
@@ -27,6 +28,7 @@ class Data_Summary
 	 */
 	public static function month($date)
 	{
+        date_default_timezone_set(Config::$tz);
 		// Calculate end of this month
         $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
 
@@ -44,6 +46,7 @@ class Data_Summary
 	 */
 	private static function summary($start_date, $end_date)
 	{
+        date_default_timezone_set(Config::$tz);
         $block = IPBlock::create(Config::$localSubnet);
         $i = 0; //use this counter to avoid expanding more than 256 IP addresses.
         $addresses = array(); //hold list of IPs. we set hard limit of 256 addresses.
@@ -60,10 +63,9 @@ class Data_Summary
         $in = "(" . implode(",",$addresses) . ")";
 
         //make the table name in _mmYY format. for inbound table
-        $table_in = "inbound_" . gmdate("mY", $start_date);
-        $table_out = "outbound_" . gmdate("mY", $start_date);
+        $table_in = "inbound_" . date("mY", $start_date);
+        $table_out = "outbound_" . date("mY", $start_date);
 
-        var_dump($table_in);
 
         //get a database connection via PDO object
 		$db = Database::getDB();

@@ -5,14 +5,11 @@
  */
 
 require __DIR__ . '/includes/core.php';
-
-// Querystring parameters
-$year = !empty($_GET['year']) ? (int) $_GET['year'] : date('Y');
-$month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
-$day = !empty($_GET['day']) ? (int) $_GET['day'] : date('d');
-$ip = $_GET['ip'];
-
-$date = mktime(0, 0, 0, $month, $day, $year);
+date_default_timezone_set(Config::$tz);
+// get date and IP from query string if available.
+$date = strtotime($_GET['date']) ?? strtotime("today"); //make a unix timestamp of it.
+//if no IP supplied, should show all hosts
+$ip = $_GET['ip']; //should validate this?
 
 $data = Data_Host::day($ip, $date);
 
