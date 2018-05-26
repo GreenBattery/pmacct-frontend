@@ -6,8 +6,8 @@
 
 require __DIR__ . '/includes/core.php';
 
-// Querystring parameters
-$date = $_GET['date'] ?? strtotime("today");
+// get date and IP from query string if available. 
+$date = strtotime($_GET['date']) ?? strtotime("today");
 //if no IP supplied, should show all hosts
 $ip = $_GET['ip'];
 
