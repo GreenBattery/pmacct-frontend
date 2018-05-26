@@ -3,8 +3,6 @@ $this->page_id = 'host-day';
 ?>
 <h1>Statistics for <?php echo $this->ip; ?> (<?php echo gethostbyaddr($this->ip); ?>) on <?php echo date('Y-m-d', $this->date); ?></h1>
 
-<div id="host_graph"></div>
-
 <table id="host">
 	<thead>
 		<tr>

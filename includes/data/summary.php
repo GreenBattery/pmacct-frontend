@@ -63,10 +63,9 @@ class Data_Summary
         $in = "(" . implode(",",$addresses) . ")";
 
         //make the table name in _mmYY format. for inbound table
-        $table_in = "inbound_" . gmdate("mY", $start_date);
-        $table_out = "outbound_" . gmdate("mY", $start_date);
+        $table_in = "inbound_" . date("mY", $start_date);
+        $table_out = "outbound_" . date("mY", $start_date);
 
-        var_dump($table_in);
 
         //get a database connection via PDO object
 		$db = Database::getDB();
