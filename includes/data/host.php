@@ -61,11 +61,11 @@ class Data_Host
 
 			$data[$h] = array(); // each hour will be an array of bytes in and out.
 
-            $data[$h]['bytes_in'] = $row['bytes_in'];
+            $data[$h]['bytes_in'] = (int) $row['bytes_in'];
 			
 			$totals['bytes_in'] += $row['bytes_in'];
 
-			$data[$h]['bytes_total'] =  $row['bytes_in'];
+			$data[$h]['bytes_total'] =  (int) $row['bytes_in']; //add inbound bytes to totals for this hour.
 
 			$totals['bytes_total'] += $row['bytes_in'];
 		}
@@ -88,11 +88,11 @@ class Data_Host
         while ($row = $query->fetch())
         {
             $h = (string) explode(" ", $row['hour'])[1];
-            $data[$h]['bytes_out'] = $row['bytes_out'];
+            $data[$h]['bytes_out'] =(int)  $row['bytes_out'];
 
             $totals['bytes_out'] += $row['bytes_out'];
 
-            $data[$h]['bytes_total'] = $data[$h]['bytes_in'] + $row['bytes_out'];
+            $data[$h]['bytes_total'] += $row['bytes_out']; //add outbound bytes to totals for this hour
 
             $totals['bytes_total'] += $row['bytes_out'];
         }
