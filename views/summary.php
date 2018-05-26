@@ -1,4 +1,4 @@
-<H1>Summary for the month of <?= $this->date; ?></H1>
+<H1>Summary for the month of <?= date("M, Y", $this->date); ?></H1>
 <div id="summary_container">
 	<table id="summary">
 		<thead>
