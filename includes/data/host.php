@@ -36,9 +36,9 @@ class Data_Host
 			ORDER BY stamp_inserted DESC');
 			
 		$query->execute(array(
-			'start_date' => $start_date,
-			'end_date' => $end_date,
-			'ip' => $ip
+			':start_date' => $start_date,
+			':end_date' => $end_date,
+			':ip' => $ip
 		));
 		
 		$data = array();
