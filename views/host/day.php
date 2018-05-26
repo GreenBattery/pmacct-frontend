@@ -29,7 +29,7 @@ foreach ($this->data['data'] as $hour=>$row)
 {
 	echo '
 		<tr data-in="', $row['bytes_in'], '" data-out="', $row['bytes_out'], '" data-total="', $row['bytes_in'] + $row['bytes_out'], '">
-			<td>', date('H:i', $hour), ' - ', date('H:i', $hour + (60 * 60)), '</td>
+			<td>' . $hour . '</td>
 			<td>', Format::decimal_size($row['bytes_in']), '</td>
 			<td>', Format::decimal_size($row['bytes_out']), '</td>
 			<td>', Format::decimal_size($row['bytes_total']), '</td>
