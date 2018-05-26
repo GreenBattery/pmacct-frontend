@@ -1,6 +1,5 @@
 <?php
 $this->page_id = 'host-day';
-var_dump($data);
 ?>
 <h1>Statistics for <?php echo $this->ip; ?> (<?php echo gethostbyaddr($this->ip); ?>) on <?php echo date('Y-m-d', $this->date); ?></h1>
 

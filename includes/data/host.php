@@ -14,15 +14,11 @@ class Data_Host
 	public static function day($ip, $date)
 	{
         date_default_timezone_set(Config::$tz);
-	    //var_dump($ip);
-	    var_dump("start: " . $date);
 		// Calculate the last second of this day
 		$start_date = (int) $date;
 
 		//assuming start date is midnight exactly just add 86399 seconds.
 		$end_date = (int) $date + 86399;
-
-		var_dump("end: " . $end_date);
 
         //make the table name in _mmYY format. for inbound table
         $table_in = "inbound_" . date("mY", $start_date);
