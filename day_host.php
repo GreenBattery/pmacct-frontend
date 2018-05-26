@@ -13,8 +13,6 @@ $ip = $_GET['ip']; //should validate this?
 
 $data = Data_Host::day($ip, $date);
 
-var_dump($data);
-
 View::factory('host/day')
 	->set('ip', $ip)
 	->set('date', $date)
