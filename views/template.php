@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>Data Usage Stats Viewer</title>
 	<base href="http://<?php echo $_SERVER['SERVER_NAME'] ?><?php echo dirname($_SERVER['PHP_SELF']) ?>/" />
