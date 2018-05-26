@@ -51,9 +51,9 @@ class Data_Host
 		while ($row = $query->fetch())
 		{
 
-		    var_dump($row);
+		    //var_dump($row);
 
-		    $h = date("H", $row['hour']);
+		    $h = explode(" ", $row['hour'])[1];
 			$row->bytes_total = $row->bytes_in + $row->bytes_out;
 			$data[$h] = array(); // each hour will be an array of bytes in and bout.
             $date[$h]['bytes_in'] = $row['bytes_in'];
