@@ -27,9 +27,10 @@
     </div>
 </nav>
 
-
+<div class="container theme-showcase" role="main">
 	<?php echo $this->body ?>
 
+</div>
 	<script src="js/jquery-3.3.1.min.js"></script>
 	<script src="js/highcharts.js"></script>
 	<script src="js/scripts.js"></script>
