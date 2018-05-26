@@ -28,6 +28,8 @@ class Data_Host
         $table_in = "inbound_" . date("mY", $start_date);
         $table_out = "outbound_" . date("mY", $start_date);
 
+
+        //handle inbound stats
 		$query = Database::getDB()->prepare('
 			SELECT ip_dst as ip, stamp_inserted as hour, SUM(bytes) as bytes_in
 			FROM ' . $table_in. '
@@ -63,11 +65,37 @@ class Data_Host
 			
 			$totals['bytes_in'] += $row['bytes_in'];
 
-			$data[$h]['bytes_total'] = $row['bytes_in'] + $row['bytes_in'];
+			$data[$h]['bytes_total'] =  $row['bytes_in'];
 
 			$totals['bytes_total'] += $row['bytes_in'];
 		}
-		
+
+
+		//handle outbound stats
+        $query = Database::getDB()->prepare('
+			SELECT ip_src as ip, stamp_inserted as hour, SUM(bytes) as bytes_out
+			FROM ' . $table_out. '
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+				AND ip_src = :ip GROUP BY hour
+			ORDER BY stamp_inserted ASC');
+
+        $query->execute(array(
+            ':start_date' => $start_date,
+            ':end_date' => $end_date,
+            ':ip' => $ip
+        ));
+
+        while ($row = $query->fetch())
+        {
+            $h = (string) explode(" ", $row['hour'])[1];
+            $data[$h]['bytes_out'] = $row['bytes_out'];
+
+            $totals['bytes_out'] += $row['bytes_out'];
+
+            $data[$h]['bytes_total'] = $$data[$h]['bytes_in'] + $row['bytes_out'];
+
+            $totals['bytes_total'] += $row['bytes_out'];
+        }
 		return array(
 			'data' => $data,
 			'totals' => $totals
