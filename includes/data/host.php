@@ -32,7 +32,7 @@ class Data_Host
 			SELECT ip_dst as ip, stamp_inserted as hour, bytes as bytes_in
 			FROM ' . $table_in. '
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-				AND ip_dst = :ip GROUP BY stamp_inserted
+				AND ip_dst = :ip GROUP BY hour
 			ORDER BY stamp_inserted DESC');
 			
 		$query->execute(array(
