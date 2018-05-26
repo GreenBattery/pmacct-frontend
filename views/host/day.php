@@ -27,9 +27,9 @@ foreach ($this->data['data'] as $hour=>$row)
 	echo '
 		<tr data-in="', $row['bytes_in'] ?? 0 , '" data-out="', $row['bytes_out'] ?? 0, '" data-total="', $row['bytes_in'] ?? 0  + $row['bytes_out'] ?? 0, '">
 			<td>' . $hour . '</td>
-			<td>', Format::decimal_size($row['bytes_in']), '</td>
-			<td>', Format::decimal_size($row['bytes_out']), '</td>
-			<td>', Format::decimal_size($row['bytes_total']), '</td>
+			<td>', Format::decimal_size($row['bytes_in'] ?? 0), '</td>
+			<td>', Format::decimal_size($row['bytes_out'] ?? 0 ), '</td>
+			<td>', Format::decimal_size($row['bytes_total'] ?? 0), '</td>
 		</tr>';
 }
 ?>
