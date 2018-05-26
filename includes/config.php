@@ -11,7 +11,8 @@ class Config
 		'prefix' => 'inbound_',
         'engine' => 'mysql'
 	);
-	
+
+	static $tz = "Europe/London";
 	// IPs to include in the statistics
 	// Set this to a blank array to show all IPs
 	static $include_ips = array(

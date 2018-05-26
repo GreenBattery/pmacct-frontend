@@ -5,6 +5,7 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/ip.lib.php');
+
 class Data_Summary
 {
 	/**
@@ -27,6 +28,7 @@ class Data_Summary
 	 */
 	public static function month($date)
 	{
+        date_default_timezone_set(Config::$tz);
 		// Calculate end of this month
         $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
 
