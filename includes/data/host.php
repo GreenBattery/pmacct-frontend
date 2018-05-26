@@ -17,10 +17,10 @@ class Data_Host
 	    //var_dump($ip);
 	    var_dump("start: " . $date);
 		// Calculate the last second of this day
-		$start_date = $date;
+		$start_date = (int) $date;
 
 		//assuming start date is midnight exactly just add 86399 seconds.
-		$end_date = $date + 86399;
+		$end_date = (int) $date + 86399;
 
 		var_dump("end: " . $end_date);
 
