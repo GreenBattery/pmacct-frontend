@@ -7,12 +7,15 @@
 require __DIR__ . '/includes/core.php';
 
 // Querystring parameters
-$year = !empty($_GET['year']) ? (int) $_GET['year'] : date('Y');
-$month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
-$day = !empty($_GET['day']) ? (int) $_GET['day'] : date('d');
+$date = $_GET['date'] ?? strtotime("today");
+//if no IP supplied, should show all hosts
 $ip = $_GET['ip'];
 
+var_dump($date);
+
 $date = gmmktime(0, 0, 0, $month, $day, $year);
+
+var_dump("gmmktim: " . $date);
 
 $data = Data_Host::day($ip, $date);
 

@@ -7,8 +7,8 @@
 require __DIR__ . '/includes/core.php';
 
 // Querystring parameters
-$year = !empty($_GET['year']) ? (int) $_GET['year'] : date('Y');
-$month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
+$year = (int) $_GET['year'] ?? date('Y');
+$month = (int) $_GET['month'] ?? date('m');
 
 $start_date = gmmktime(0, 0, 0, $month, 1, $year);
 
