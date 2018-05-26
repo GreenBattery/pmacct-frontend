@@ -14,7 +14,7 @@ class Data_Host
 	public static function day($ip, $date)
 	{
 	    //var_dump($ip);
-	    var_dump($date);
+	    var_dump("start: " . $date);
 		// Calculate the last second of this day
 		$start_date = $date;
 
