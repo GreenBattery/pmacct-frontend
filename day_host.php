@@ -9,15 +9,7 @@ require __DIR__ . '/includes/core.php';
 // get date and IP from query string if available.
 $date = strtotime($_GET['date']) ?? strtotime("today"); //make a unix timestamp of it.
 //if no IP supplied, should show all hosts
-$ip = $_GET['ip'];
-
-var_dump($date);
-
-$date = gmmktime(0, 0, 0, $month, $day, $year);
-
-var_dump("gmmktim today: " . strtotime("today"));
-
-
+$ip = $_GET['ip']; //should validate this?
 
 $data = Data_Host::day($ip, $date);
 
