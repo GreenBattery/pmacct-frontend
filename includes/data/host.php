@@ -57,8 +57,8 @@ class Data_Host
 
 		    var_dump($h);
 
-			$data[$h] = array(); // each hour will be an array of bytes in and out.
-            
+			$data['$h'] = array(); // each hour will be an array of bytes in and out.
+
             $date[$h]['bytes_in'] = $row['bytes_in'];
 			
 			$totals['bytes_in'] += $row['bytes_in'];
