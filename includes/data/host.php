@@ -55,9 +55,9 @@ class Data_Host
 
 		    $h = (string) explode(" ", $row['hour'])[1];
 
-		    var_dump($h);
+		    var_dump($row);
 
-			$data['$h'] = array(); // each hour will be an array of bytes in and out.
+			$data[$h] = array(); // each hour will be an array of bytes in and out.
 
             $date[$h]['bytes_in'] = $row['bytes_in'];
 			
