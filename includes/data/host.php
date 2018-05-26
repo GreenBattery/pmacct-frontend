@@ -23,28 +23,34 @@ class Data_Host
 
 		var_dump($end_date);
 
+        //make the table name in _mmYY format. for inbound table
+        $table_in = "inbound_" . gmdate("mY", $start_date);
+        $table_out = "outbound_" . gmdate("mY", $start_date);
+
 		$query = Database::getDB()->prepare('
-			SELECT ip, UNIX_TIMESTAMP(date) AS date, bytes_out, bytes_in
-			FROM ' . Config::$database['prefix'] . 'combined
-			WHERE date BETWEEN :start_date AND :end_date
+			SELECT ip_dst as ip, stamp_inserted as hour, bytes as bytes_in
+			FROM ' . $table_in. '
+			WHERE hour BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
 				AND ip = :ip
 			ORDER BY date DESC');
 			
 		$query->execute(array(
-			'start_date' => Database::date($start_date),
-			'end_date' => Database::date($end_date),
+			'start_date' => $start_date,
+			'end_date' => $end_date,
 			'ip' => $ip
 		));
 		
 		$data = array();
-		$totals = (object)array(
+		$totals = array(
 			'bytes_out' => 0,
 			'bytes_in' => 0,
 			'bytes_total' => 0,
 		);
 		
-		while ($row = $query->fetchObject())
+		while ($row = $query->fetch())
 		{
+
+		    var_dump($row);
 			$row->bytes_total = $row->bytes_in + $row->bytes_out;
 			$data[] = $row;
 			
