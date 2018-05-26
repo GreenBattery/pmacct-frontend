@@ -56,11 +56,13 @@ class Data_Host
 		    $h = explode(" ", $row['hour'])[1];
 
 		    var_dump($h);
-			$row->bytes_total = $row->bytes_in + $row->bytes_out;
+
 			$data[$h] = array(); // each hour will be an array of bytes in and bout.
             $date[$h]['bytes_in'] = $row['bytes_in'];
 			
 			$totals['bytes_in'] += $row['bytes_in'];
+
+			$data[$h]['bytes_total'] = $row['bytes_in'] + $row['bytes_in'];
 
 			$totals['bytes_total'] += $row['bytes_in'];
 		}
