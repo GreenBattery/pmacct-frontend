@@ -46,6 +46,7 @@ class Data_Summary
 	 */
 	private static function summary($start_date, $end_date)
 	{
+        date_default_timezone_set(Config::$tz);
         $block = IPBlock::create(Config::$localSubnet);
         $i = 0; //use this counter to avoid expanding more than 256 IP addresses.
         $addresses = array(); //hold list of IPs. we set hard limit of 256 addresses.

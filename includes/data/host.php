@@ -13,6 +13,7 @@ class Data_Host
 	 */
 	public static function day($ip, $date)
 	{
+        date_default_timezone_set(Config::$tz);
 	    //var_dump($ip);
 	    var_dump("start: " . $date);
 		// Calculate the last second of this day
@@ -51,15 +52,18 @@ class Data_Host
 		{
 
 		    var_dump($row);
+
+		    $h = date("H", $row['hour']);
 			$row->bytes_total = $row->bytes_in + $row->bytes_out;
-			$data[] = $row;
+			$data[$h] = array(); // each hour will be an array of bytes in and bout.
+            $date[$h]['bytes_in'] = $row['bytes_in'];
 			
-			$totals->bytes_in += $row->bytes_in;
-			$totals->bytes_out += $row->bytes_out;
-			$totals->bytes_total += $row->bytes_total;
+			$totals['bytes_in'] += $row['bytes_in'];
+
+			$totals['bytes_total'] += $row['bytes_in'];
 		}
 		
-		return (object)array(
+		return array(
 			'data' => $data,
 			'totals' => $totals
 		);
