@@ -92,7 +92,7 @@ class Data_Host
 
             $totals['bytes_out'] += $row['bytes_out'];
 
-            $data[$h]['bytes_total'] = $$data[$h]['bytes_in'] + $row['bytes_out'];
+            $data[$h]['bytes_total'] = $data[$h]['bytes_in'] + $row['bytes_out'];
 
             $totals['bytes_total'] += $row['bytes_out'];
         }
