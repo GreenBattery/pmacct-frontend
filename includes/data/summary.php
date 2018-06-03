@@ -38,8 +38,8 @@ class Data_Summary
 		//$data =  self::summary($date, $end_date);
 
         //make the table name in _mmYY format. for inbound table
-        $table_in = "inbound_" . date("mY", $start_date);
-        $table_out = "outbound_" . date("mY", $start_date);
+        $table_in = "inbound_" . date("mY", $date);
+        $table_out = "outbound_" . date("mY", $end_date);
 
         $query = Database::getDB()->prepare('
 			SELECT ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes_out, 
@@ -48,7 +48,7 @@ class Data_Summary
 			ORDER BY date, ip');
 
         $query->execute(array(
-            'start_date' => Database::date($start_date),
+            'start_date' => Database::date(date),
             'end_date' => Database::date($end_date),
         ));
 
