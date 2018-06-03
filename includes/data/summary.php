@@ -61,6 +61,9 @@ class Data_Summary
         $data = array(); // prepare results array.
         while ($row = $query->fetch(PDO::FETCH_NAMED))
         {
+            if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+                $row['protocol'] = 'other';
+            }
             var_dump($row);
             if (array_key_exists( $row['ip'], $data)) {
 
@@ -75,9 +78,7 @@ class Data_Summary
 
                 //populate the values accordingly.
                 //collaps any non
-                if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
-                    //$row['protocol'] = 'other';
-                }
+
             }
         }
 
