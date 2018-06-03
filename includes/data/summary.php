@@ -32,7 +32,7 @@ class Data_Summary
 		// Calculate end of this month
 
         var_dump($date);
-        $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
+        $last_day = date('t', $date); //get the last day of this month from timestamp.
 
         var_dump("lastday: " . $last_day . " of " . date('n', $date));
 
