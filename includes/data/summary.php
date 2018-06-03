@@ -50,7 +50,7 @@ class Data_Summary
         $query = Database::getDB()->prepare("
 			SELECT ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes_out, 
 			FROM $table_out
-			WHERE stamp_inserted BETWEEN FROM_UNIXTIMESTAMP(:start_date) AND FROM_UNIXTIMESTAMP(:end_date)
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
 			ORDER BY date, ip");
 
         $query->execute(array(
