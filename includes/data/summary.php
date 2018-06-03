@@ -59,6 +59,24 @@ class Data_Summary
         ));
 
         $data = array(); // prepare results array.
+        $totals = array(
+            'in'=>0,
+            'out'=>0,
+            'tcp'=> array(
+                'in'=> 0,
+                'out'=>0
+            ),
+            'udp'=> array(
+                'in'=>0,
+                'out'=>0
+            ),
+            'other'=> array(
+                'in'=>0,
+                'out'=>0
+            )
+            );
+
+
         while ($row = $query->fetch(PDO::FETCH_NAMED))
         {
             //collapse uninteresting protocols to 'other'
@@ -66,10 +84,8 @@ class Data_Summary
                 $row['protocol'] = 'other';
             }
             //var_dump($row);
-            if (array_key_exists( $row['ip'], $data)) {
-                $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
+            if (!array_key_exists( $row['ip'], $data)) {
 
-            }else {
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
                     'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
@@ -78,10 +94,14 @@ class Data_Summary
                     'other' => array('bytes_in'=>0, 'bytes_out' => 0),
                 );
 
-                //populate the values accordingly.
-                $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
-
             }
+
+
+            //populate the values accordingly.
+            $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
+
+            $totals[$row['protocol']]['out'] += $row['bytes_out'];
+            $totals['out'] += $row['bytes_out'];
 
         }
 
@@ -96,7 +116,7 @@ class Data_Summary
             ':start_date' => $date,
             ':end_date' => $end_date,
         ));
-        
+
         while ($row = $query->fetch(PDO::FETCH_NAMED))
         {
             //collapse uninteresting protocols to 'other'
@@ -104,10 +124,7 @@ class Data_Summary
                 $row['protocol'] = 'other';
             }
             //var_dump($row);
-            if (array_key_exists( $row['ip'], $data)) {
-                $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
-
-            }else {
+            if (!array_key_exists( $row['ip'], $data)) {
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
                     'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
@@ -116,19 +133,22 @@ class Data_Summary
                     'other' => array('bytes_in'=>0, 'bytes_out' => 0),
                 );
 
-                //populate the values accordingly.
-                $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
-
             }
+
+            $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
+
+            $totals[$row['protocol']]['in'] += $row['bytes_in'];
+            $totals['in'] += $row['bytes_in'];
 
         }
 
 
 		//perform additional categorisation
+        $res = array('data'=> $data, 'totals'=>$totals);
 
-        var_dump($data);
+        var_dump($res);
         //return data
-        return $data;
+        return $res;
 	}
 	
 	/**
