@@ -48,7 +48,7 @@ class Data_Summary
 			ORDER BY date, ip');
 
         $query->execute(array(
-            'start_date' => Database::date(date),
+            'start_date' => Database::date($date),
             'end_date' => Database::date($end_date),
         ));
 
