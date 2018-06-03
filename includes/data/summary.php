@@ -35,9 +35,30 @@ class Data_Summary
         //get the epoch in localtime?
 		$end_date = gmmktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
 		
-		$data =  self::summary($date, $end_date);
+		//$data =  self::summary($date, $end_date);
 
-		var_dump($data);
+        //make the table name in _mmYY format. for inbound table
+        $table_in = "inbound_" . date("mY", $start_date);
+        $table_out = "outbound_" . date("mY", $start_date);
+
+        $query = Database::getDB()->prepare('
+			SELECT ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes_out, 
+			FROM ' . $table_out . '
+			WHERE stamp_inserted BETWEEN :start_date AND :end_date
+			ORDER BY date, ip');
+
+        $query->execute(array(
+            'start_date' => Database::date($start_date),
+            'end_date' => Database::date($end_date),
+        ));
+
+        while ($row = $query->fetch())
+        {
+            var_dump($row);
+        }
+
+        $data = array();
+
 
 		//perform additional categorisation
 
