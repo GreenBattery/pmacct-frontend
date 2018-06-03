@@ -34,6 +34,7 @@ class Data_Summary
 
         //get the epoch in localtime?
 		$end_date = mktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
+		var_dump($end_date);
 		
 		//$data =  self::summary($date, $end_date);
 
