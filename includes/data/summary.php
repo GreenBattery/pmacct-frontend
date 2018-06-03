@@ -61,11 +61,13 @@ class Data_Summary
         $data = array(); // prepare results array.
         while ($row = $query->fetch(PDO::FETCH_NAMED))
         {
+            //collapse uninteresting protocols to 'other'
             if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
                 $row['protocol'] = 'other';
             }
             var_dump($row);
             if (array_key_exists( $row['ip'], $data)) {
+                $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
 
             }else {
                 //initialise all fields for this IP
@@ -77,7 +79,7 @@ class Data_Summary
                 );
 
                 //populate the values accordingly.
-                //collaps any non
+                $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
 
             }
         }
