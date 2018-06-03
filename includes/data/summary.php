@@ -58,7 +58,7 @@ class Data_Summary
             ':end_date' => $end_date,
         ));
 
-        while ($row = $query->fetch())
+        while ($row = $query->fetch(PDO::FETCH_NAMED))
         {
             var_dump($row);
         }
