@@ -32,6 +32,7 @@ class Data_Summary
 		// Calculate end of this month
         $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
 
+        var_dump($date);
         //get the epoch in localtime?
 		$end_date = mktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
 		var_dump($end_date);
