@@ -35,7 +35,14 @@ class Data_Summary
         //get the epoch in localtime?
 		$end_date = gmmktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
 		
-		return self::summary($date, $end_date);
+		$data =  self::summary($date, $end_date);
+
+		var_dump($data);
+
+		//perform additional categorisation
+
+        //return data
+        return $data;
 	}
 	
 	/**
