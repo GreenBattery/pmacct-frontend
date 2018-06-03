@@ -33,7 +33,7 @@ class Data_Summary
         $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
 
         //get the epoch in localtime?
-		$end_date = gmmktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
+		$end_date = mktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
 		
 		//$data =  self::summary($date, $end_date);
 
