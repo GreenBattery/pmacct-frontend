@@ -51,7 +51,7 @@ class Data_Summary
 			SELECT ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes_out, 
 			FROM $table_out
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-			ORDER BY date, ip");
+			ORDER BY date");
 
         $query->execute(array(
             ':start_date' => $date,
