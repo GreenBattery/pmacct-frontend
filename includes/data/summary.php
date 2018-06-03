@@ -41,11 +41,11 @@ class Data_Summary
         $table_in = "inbound_" . date("mY", $date);
         $table_out = "outbound_" . date("mY", $end_date);
 
-        $query = Database::getDB()->prepare('
+        $query = Database::getDB()->prepare("
 			SELECT ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes_out, 
 			FROM ' . $table_out . '
-			WHERE stamp_inserted BETWEEN :start_date AND :end_date
-			ORDER BY date, ip');
+			WHERE stamp_inserted BETWEEN ':start_date' AND ':end_date'
+			ORDER BY date, ip");
 
         $query->execute(array(
             'start_date' => Database::date($date),
