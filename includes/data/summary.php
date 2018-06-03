@@ -58,12 +58,30 @@ class Data_Summary
             ':end_date' => $end_date,
         ));
 
+        $data = array(); // prepare results array.
         while ($row = $query->fetch(PDO::FETCH_NAMED))
         {
             var_dump($row);
+            if (array_key_exists( $row['ip'], $data)) {
+
+            }else {
+                //initialise all fields for this IP
+                $data[$row['ip']] = array(
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                );
+
+                //populate the values accordingly.
+                //collaps any non
+                if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+                    //$row['protocol'] = 'other';
+                }
+            }
         }
 
-        $data = array();
+
 
 
 		//perform additional categorisation
