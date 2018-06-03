@@ -86,6 +86,42 @@ class Data_Summary
         }
 
 
+        $query = Database::getDB()->prepare("
+			SELECT ip_dst AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_in, ip_proto AS protocol, src_port
+			FROM $table_in
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+			ORDER BY stamp_inserted, ip_dst");
+
+        $query->execute(array(
+            ':start_date' => $date,
+            ':end_date' => $end_date,
+        ));
+        
+        while ($row = $query->fetch(PDO::FETCH_NAMED))
+        {
+            //collapse uninteresting protocols to 'other'
+            if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+                $row['protocol'] = 'other';
+            }
+            //var_dump($row);
+            if (array_key_exists( $row['ip'], $data)) {
+                $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
+
+            }else {
+                //initialise all fields for this IP
+                $data[$row['ip']] = array(
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                );
+
+                //populate the values accordingly.
+                $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
+
+            }
+
+        }
 
 
 		//perform additional categorisation
