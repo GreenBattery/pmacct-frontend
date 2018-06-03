@@ -65,7 +65,7 @@ class Data_Summary
             if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
                 $row['protocol'] = 'other';
             }
-            var_dump($row);
+            //var_dump($row);
             if (array_key_exists( $row['ip'], $data)) {
                 $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
 
@@ -82,6 +82,7 @@ class Data_Summary
                 $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
 
             }
+
         }
 
 
@@ -89,6 +90,7 @@ class Data_Summary
 
 		//perform additional categorisation
 
+        var_dump($data);
         //return data
         return $data;
 	}
