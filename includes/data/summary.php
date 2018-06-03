@@ -48,10 +48,10 @@ class Data_Summary
         $table_out = "outbound_" . date("mY", $end_date);
 
         $query = Database::getDB()->prepare("
-			SELECT ip_dst as ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes_out
+			SELECT ip_src AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_out
 			FROM $table_out
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-			ORDER BY date, ip_dst");
+			ORDER BY date, ip_src");
 
         $query->execute(array(
             ':start_date' => $date,
