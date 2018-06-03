@@ -31,7 +31,7 @@ class Data_Summary
         date_default_timezone_set(Config::$tz);
 		// Calculate end of this month
         $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
-        var_dump("lastday: " . $last_day);
+        var_dump("lastday: " . $last_day . "of " . date('Y', $date));
 
         var_dump($date);
         //get the epoch in localtime?
