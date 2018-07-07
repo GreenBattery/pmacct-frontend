@@ -165,7 +165,7 @@ class Data_Summary
         $contents = null;
         fclose($fh);
 
-        foreach ($line as $l) {
+        foreach ($lines as $l) {
             $a = strpos($l, " ");
             if ($a >= 0) {
                 $b = strpos($l, " ", $a);
