@@ -153,6 +153,10 @@ class Data_Summary
         //read hostnames from dnsmasq if exists/possible
         ///var/lib/misc/dnsmasq.leases
 
+        //example line from dnsmasq.leases
+        //1531007751 f4:f5:d8:ad:97:9c 192.168.1.183 Chromecast-Ultra *
+        //after second space, the IP is shown, followed by hostname, and mac address or *.
+
         $hostnames = array();
         $fn = '/var/lib/misc/dnsmasq.leases';
         $fh = fopen($fn, 'r');
@@ -161,7 +165,29 @@ class Data_Summary
         $contents = null;
         fclose($fh);
 
-        var_dump($lines);
+        foreach ($line as $l) {
+            $a = strpos($l, " ");
+            if ($a >= 0) {
+                $b = strpos($l, " ", $a);
+                if ($b >=0 ) {
+                    //now we're at hostname
+                    $c = strpos($l, " ", $b); //end of IP
+                    $ip = substr($l, $b, $c - $b);
+
+
+                    $d = strpos($l, " ", $c);
+
+                    $hn = substr($l, $d, $d - $c);
+
+                    $hostnames[$ip] = $hn;
+                }else {
+                    break; //if space not found then not valid content
+                }
+            }else {
+                break; //not valid content
+            }
+        }
+        var_dump($hostnames);
         //return data
         return $res;
 	}
