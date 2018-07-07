@@ -70,11 +70,15 @@ class Data_Summary
                 'in'=>0,
                 'out'=>0
             ),
+            'icmp'=> array(
+                'in'=>0,
+                'out'=>0
+            ),
             'other'=> array(
                 'in'=>0,
                 'out'=>0
             )
-            );
+        );
 
 
         while ($row = $query->fetch(PDO::FETCH_NAMED))
