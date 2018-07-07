@@ -31,15 +31,15 @@ class Data_Summary
         date_default_timezone_set(Config::$tz);
 		// Calculate end of this month
 
-        var_dump($date);
+        //var_dump($date);
         $last_day = date('t', $date); //get the last day of this month from timestamp.
 
-        var_dump("lastday: " . $last_day . " of " . date('n', $date));
+        //var_dump("lastday: " . $last_day . " of " . date('n', $date));
 
-        var_dump($date);
+        //var_dump($date);
         //get the epoch in localtime?
 		$end_date = mktime(23, 59, 59, date('n', $date), $last_day);
-		var_dump($end_date);
+		//var_dump($end_date);
 		
 		//$data =  self::summary($date, $end_date);
 

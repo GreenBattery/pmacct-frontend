@@ -24,6 +24,8 @@
 <?php
 foreach ($this->data['data'] as $ip=>$row)
 {
+    var_dump($row);
+    
     $row['bytes_total'] = (int) ($row['bytes_in'] ?? 0) + ($row['bytes_out'] ?? 0);
 	echo '
 			<tr data-in="', $row['bytes_in'] ?? 0, '" data-out="', $row['bytes_out'] ?? 0, '" data-total="', $row['bytes_total'], '">
