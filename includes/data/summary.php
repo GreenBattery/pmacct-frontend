@@ -168,19 +168,20 @@ class Data_Summary
         foreach ($lines as $l) {
             $a = strpos($l, " ");
             if ($a >= 0) {
+                var_dump($l);
                 $b = strpos($l, " ", $a+1);
                 if ($b >=0 ) {
                     //now we're at ip
                     $c = strpos($l, " ", $b+1); //end of IP
 
-                    $ip = substr($l, $b, $c - $b);
+                    $ip = trim(substr($l, $b, $c - $b));
 
 
                     $d = strpos($l, " ", $c+1);
 
                     $hn = substr($l, $c, $d - $c);
 
-                    $hostnames[$ip] = $hn;
+                    $hostnames[$ip] = trim($hn);
                 }else {
                     break; //if space not found then not valid content
                 }
