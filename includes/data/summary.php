@@ -180,7 +180,7 @@ class Data_Summary
 
                     $d = strpos($l, " ", $c+1);
 
-                    $hn = substr($l, $d, $d - $c);
+                    $hn = substr($l, $c, $d - $c);
 
                     $hostnames[$ip] = $hn;
                 }else {
