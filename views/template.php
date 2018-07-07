@@ -20,8 +20,8 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="./">Home</a></li>
-                <li><a href="#about">Month</a></li>
-                <li><a href="#contact">Hosts</a></li>
+                <li><a href="month.php">Month</a></li>
+                <li><a href="host.php">Hosts</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>

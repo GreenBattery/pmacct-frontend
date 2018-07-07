@@ -23,19 +23,135 @@ class Data_Summary
 	
 	/**
 	 * Get the statistics for a certain month
-	 * @param	date	Minimum date
+	 * @param	date	Minimum date, in unix epoch.
 	 * @return	Array of data
 	 */
 	public static function month($date)
 	{
         date_default_timezone_set(Config::$tz);
 		// Calculate end of this month
-        $last_day = date('t', strtotime($date)); //get the last day of this month from timestamp.
 
+        //var_dump($date);
+        $last_day = date('t', $date); //get the last day of this month from timestamp.
+
+        //var_dump("lastday: " . $last_day . " of " . date('n', $date));
+
+        //var_dump($date);
         //get the epoch in localtime?
-		$end_date = gmmktime(23, 59, 59, date('m', $date), $last_day, date('Y', $date));
+		$end_date = mktime(23, 59, 59, date('n', $date), $last_day);
+		//var_dump($end_date);
 		
-		return self::summary($date, $end_date);
+		//$data =  self::summary($date, $end_date);
+
+        //make the table name in _mmYY format. for inbound table
+        $table_in = "inbound_" . date("mY", $date);
+        $table_out = "outbound_" . date("mY", $end_date);
+
+        $query = Database::getDB()->prepare("
+			SELECT ip_src AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_out, ip_proto AS protocol, dst_port
+			FROM $table_out
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+			ORDER BY stamp_inserted, ip_src");
+
+        $query->execute(array(
+            ':start_date' => $date,
+            ':end_date' => $end_date,
+        ));
+
+        $data = array(); // prepare results array.
+        $totals = array(
+            'in'=>0,
+            'out'=>0,
+            'tcp'=> array(
+                'in'=> 0,
+                'out'=>0
+            ),
+            'udp'=> array(
+                'in'=>0,
+                'out'=>0
+            ),
+            'icmp'=> array(
+                'in'=>0,
+                'out'=>0
+            ),
+            'other'=> array(
+                'in'=>0,
+                'out'=>0
+            )
+        );
+
+
+        while ($row = $query->fetch(PDO::FETCH_NAMED))
+        {
+            //collapse uninteresting protocols to 'other'
+            if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+                $row['protocol'] = 'other';
+            }
+            //var_dump($row);
+            if (!array_key_exists( $row['ip'], $data)) {
+
+                //initialise all fields for this IP
+                $data[$row['ip']] = array(
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                );
+
+            }
+
+
+            //populate the values accordingly.
+            $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
+
+            $totals[$row['protocol']]['out'] += $row['bytes_out'];
+            $totals['out'] += $row['bytes_out'];
+
+        }
+
+
+        $query = Database::getDB()->prepare("
+			SELECT ip_dst AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_in, ip_proto AS protocol, src_port
+			FROM $table_in
+			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+			ORDER BY stamp_inserted, ip_dst");
+
+        $query->execute(array(
+            ':start_date' => $date,
+            ':end_date' => $end_date,
+        ));
+
+        while ($row = $query->fetch(PDO::FETCH_NAMED))
+        {
+            //collapse uninteresting protocols to 'other'
+            if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+                $row['protocol'] = 'other';
+            }
+            //var_dump($row);
+            if (!array_key_exists( $row['ip'], $data)) {
+                //initialise all fields for this IP
+                $data[$row['ip']] = array(
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                );
+
+            }
+
+            $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
+
+            $totals[$row['protocol']]['in'] += $row['bytes_in'];
+            $totals['in'] += $row['bytes_in'];
+
+        }
+
+
+		//perform additional categorisation
+        $res = array('data'=> $data, 'totals'=>$totals);
+
+        //return data
+        return $res;
 	}
 	
 	/**
