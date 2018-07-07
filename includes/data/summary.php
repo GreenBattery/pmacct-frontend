@@ -150,6 +150,18 @@ class Data_Summary
 		//perform additional categorisation
         $res = array('data'=> $data, 'totals'=>$totals);
 
+        //read hostnames from dnsmasq if exists/possible
+        ///var/lib/misc/dnsmasq.leases
+
+        $hostnames = array();
+        $fn = '/var/lib/misc/dnsmasq.leases';
+        $fh = fopen($fn, 'r');
+        $contents = fread($fh, filesize($fn));
+        $lines = explode("\n", $contents);
+        $contents = null;
+        fclose($fh);
+
+        var_dump($lines);
         //return data
         return $res;
 	}
