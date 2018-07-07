@@ -2,7 +2,7 @@
     <H1>Summary for the month of <?= date("M, Y", $this->date); ?></H1>
 </div>
 <div id="summary_container">
-    <?php var_dump($this->data['totals']); ?>
+
 	<table id="summary">
 		<thead>
 			<tr>

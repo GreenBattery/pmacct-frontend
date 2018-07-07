@@ -1,5 +1,6 @@
 <?php
 $this->page_id = 'summary-month';
+var_dump($this->data);
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
 
