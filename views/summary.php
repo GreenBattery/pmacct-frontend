@@ -25,9 +25,9 @@
 <?php
 foreach ($this->data['data'] as $ip=>$row)
 {
-    var_dump($row);
+    //var_dump($row);
     $b_in = $row['udp']['bytes_in'] + $row['tcp']['bytes_in'] + $row['icmp']['bytes|_in'];
-    $b_out = $row['udp']['bytes_out'] + $row['tcp']['bytes_out'] + $row['icmp']['bytes|_out'];
+    $b_out = $row['udp']['bytes_out'] + $row['tcp']['bytes_out'] + $row['icmp']['bytes_out'];
     $b_t = $b_in + $b_out;
 	echo '
 			<tr data-in="', $row['bytes_in'] ?? 0, '" data-out="', $row['bytes_out'] ?? 0, '" data-total="', $row['bytes_total'], '">
