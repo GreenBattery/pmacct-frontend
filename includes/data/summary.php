@@ -150,7 +150,6 @@ class Data_Summary
 		//perform additional categorisation
         $res = array('data'=> $data, 'totals'=>$totals);
 
-        var_dump($res);
         //return data
         return $res;
 	}
