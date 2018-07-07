@@ -166,9 +166,12 @@ class Data_Summary
         fclose($fh);
 
         foreach ($lines as $l) {
+
+            if (strlen(trim($l))== 0) {
+                continue; //skip empty lines.
+            }
             $a = strpos($l, " ");
             if ($a >= 0) {
-                var_dump($l);
                 $b = strpos($l, " ", $a+1);
                 if ($b >=0 ) {
                     //now we're at ip
