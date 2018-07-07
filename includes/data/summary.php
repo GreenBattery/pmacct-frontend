@@ -168,17 +168,17 @@ class Data_Summary
         foreach ($lines as $l) {
             $a = strpos($l, " ");
             if ($a >= 0) {
-                $b = strpos($l, " ", $a);
+                $b = strpos($l, " ", $a+1);
                 var_dump("b: " . $b);
                 if ($b >=0 ) {
                     //now we're at ip
-                    $c = strpos($l, " ", $b); //end of IP
+                    $c = strpos($l, " ", $b+1); //end of IP
                     var_dump("c: " . $c);
 
                     $ip = substr($l, $b, $c - $b);
 
 
-                    $d = strpos($l, " ", $c);
+                    $d = strpos($l, " ", $c+1);
 
                     $hn = substr($l, $d, $d - $c);
 
