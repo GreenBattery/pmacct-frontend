@@ -169,9 +169,12 @@ class Data_Summary
             $a = strpos($l, " ");
             if ($a >= 0) {
                 $b = strpos($l, " ", $a);
+                var_dump("b: " . $b);
                 if ($b >=0 ) {
-                    //now we're at hostname
+                    //now we're at ip
                     $c = strpos($l, " ", $b); //end of IP
+                    var_dump("c: " . $c);
+
                     $ip = substr($l, $b, $c - $b);
 
 
