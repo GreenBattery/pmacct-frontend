@@ -92,10 +92,11 @@ class Data_Summary
 
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
-                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'total' =>0
                 );
 
             }
@@ -103,6 +104,8 @@ class Data_Summary
 
             //populate the values accordingly.
             $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
+            $data[$row['ip']][$row['protocol']]['total'] += $row['bytes_out'];
+            $data[$row['ip']]['total'] += $row['bytes_out'];
 
             $totals[$row['protocol']]['out'] += $row['bytes_out'];
             $totals['out'] += $row['bytes_out'];
@@ -131,15 +134,18 @@ class Data_Summary
             if (!array_key_exists( $row['ip'], $data)) {
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
-                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'total'=>0
                 );
 
             }
 
             $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
+            $data[$row['ip']][$row['protocol']]['total'] += $row['bytes_in'];
+            $data[$row['ip']]['total'] += $row['bytes_in'];
 
             $totals[$row['protocol']]['in'] += $row['bytes_in'];
             $totals['in'] += $row['bytes_in'];
@@ -194,6 +200,7 @@ class Data_Summary
         }
         var_dump($hostnames);
         //return data
+        $res['hostnames'] = $hostnames;
         return $res;
 	}
 	
