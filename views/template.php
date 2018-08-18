@@ -37,5 +37,10 @@
 	<script src="js/scripts.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/datatables.min.js"></script>
+    <script>
+        $(function() {
+            $('.datatable').DataTable();
+        })
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 </div>
 <div id="summary_container">
 
-	<table id="summary">
+	<table id="summary" class="datatable">
 		<thead>
 			<tr>
 				<th>IP</th>
