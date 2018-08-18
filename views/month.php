@@ -1,10 +1,14 @@
 <?php
 $this->page_id = 'summary-month';
-//var_dump($this->data);
+var_dump($this->date);
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
+<div>
+    <a href="">Previous Month</a>
+    <a href="">Next Month</a>
+</div>
 
-<div id="summary_container">
+<div id="summary_container" class="datatable">
     <table id="summary">
         <thead>
         <tr>
