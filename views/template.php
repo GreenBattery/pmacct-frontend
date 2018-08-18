@@ -33,7 +33,6 @@
 
 </div>
 	<script src="js/jquery-3.3.1.min.js"></script>
-	<script src="js/highcharts.js"></script>
 	<script src="js/scripts.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/datatables.min.js"></script>

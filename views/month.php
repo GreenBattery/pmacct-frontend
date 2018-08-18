@@ -4,13 +4,13 @@ var_dump($this->date);
 $dd = date_create("@{$this->date}");
 date_sub($dd, date_interval_create_from_date_string("1 month"));
 $lm = date_format($dd, "m");
-$yy = date_format($dd, "y");
+$yy = date_format($dd, "Y");
 
 
 $dd = date_create("@{$this->date}"); //reset date for use again in next month's calcs.
 date_add($dd, date_interval_create_from_date_string("1 month"));
 $nm = date_format($dd, "m");
-$ny = date_format($dd, "y");
+$ny = date_format($dd, "Y");
 var_dump($lm);
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
@@ -49,17 +49,15 @@ var_dump($lm);
 			<tr data-in="', $b_in, '" data-out="', $b_out, '" data-total="', $b_t, '">
 				<td><a href="day_host.php?date=', date('Y-m-d', mktime()), '&ip=', urlencode($ip) , '">', $ip, '</a></td>
 				<td><a href="', date('Y-m-d', $this->date), '/', $ip , '/">', gethostbyaddr($ip), '</a></td>
-				<td>', Format::decimal_size($b_in), '</td>
-				<td>', Format::decimal_size($b_out), '</td>
-				<td>', Format::decimal_size($b_t), '</td>
+				<td>', $b_in, '</td>
+				<td>', $b_out, '</td>
+				<td>', $b_t, '</td>
 			</tr>';
         }
         ?>
 
         </tbody>
     </table>
-
-    <div id="pie"></div>
 </div>
 
 
