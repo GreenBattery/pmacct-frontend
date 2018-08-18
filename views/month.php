@@ -8,7 +8,7 @@ $yy = date_format($dd, "y");
 
 
 $dd = date_create("@{$this->date}"); //reset date for use again in next month's calcs.
-date_add($dd, "1 month");
+date_add($dd, date_interval_create_from_date_string("1 month"));
 $nm = date_format($dd, "m");
 $ny = date_format($dd, "y");
 var_dump($lm);
