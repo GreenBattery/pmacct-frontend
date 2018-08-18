@@ -3,7 +3,7 @@ $this->page_id = 'summary-month';
 var_dump($this->date);
 $dd = date_create("@{$this->date}");
 date_sub($dd, date_interval_create_from_date_string("1 month"));
-$lm = date_format($dd, "MM");
+$lm = date_format($dd, "mm");
 var_dump($lm);
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
@@ -12,8 +12,8 @@ var_dump($lm);
     <a href="">Next Month</a>
 </div>
 
-<div id="summary_container" class="datatable">
-    <table id="summary">
+<div id="summary_container" >
+    <table id="summary" class="datatable">
         <thead>
         <tr>
             <th>IP</th>
