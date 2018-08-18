@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/bootstrap-theme.min.css" />
 	<link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/datatables.min.css" />
 </head>
 <body<?php if (!empty($this->page_id)) echo ' id="' . $this->page_id . '"'; ?>>
 
@@ -35,5 +36,6 @@
 	<script src="js/highcharts.js"></script>
 	<script src="js/scripts.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/datatables.min.js"></script>
 </body>
 </html>

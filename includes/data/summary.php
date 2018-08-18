@@ -198,7 +198,7 @@ class Data_Summary
                 break; //not valid content
             }
         }
-        var_dump($hostnames);
+        //var_dump($hostnames);
         //return data
         $res['hostnames'] = $hostnames;
         return $res;
@@ -282,6 +282,45 @@ class Data_Summary
 
 
         }
+
+        $hostnames = array();
+        $fn = '/var/lib/misc/dnsmasq.leases';
+        $fh = fopen($fn, 'r');
+        $contents = fread($fh, filesize($fn));
+        $lines = explode("\n", $contents);
+        $contents = null;
+        fclose($fh);
+
+        foreach ($lines as $l) {
+
+            if (strlen(trim($l))== 0) {
+                continue; //skip empty lines.
+            }
+            $a = strpos($l, " ");
+            if ($a >= 0) {
+                $b = strpos($l, " ", $a+1);
+                if ($b >=0 ) {
+                    //now we're at ip
+                    $c = strpos($l, " ", $b+1); //end of IP
+
+                    $ip = trim(substr($l, $b, $c - $b));
+
+
+                    $d = strpos($l, " ", $c+1);
+
+                    $hn = substr($l, $c, $d - $c);
+
+                    $hostnames[$ip] = trim($hn);
+                }else {
+                    break; //if space not found then not valid content
+                }
+            }else {
+                break; //not valid content
+            }
+        }
+        var_dump($hostnames);
+        //return data
+        $res['hostnames'] = $hostnames;
 
 		$totals['bytes_total'] = $totals['bytes_in'] + $totals['bytes_out'];
 		return array(
