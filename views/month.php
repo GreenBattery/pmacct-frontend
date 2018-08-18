@@ -2,7 +2,7 @@
 $this->page_id = 'summary-month';
 var_dump($this->date);
 $dd = date_create("@{$this->date}");
-date_sub($dd, date_interval_create_from_date_string("1 month"))
+date_sub($dd, date_interval_create_from_date_string("1 month"));
 $lm = date_format($dd, "MM")
 var_dump($lm);
 ?>
