@@ -3,13 +3,20 @@ $this->page_id = 'summary-month';
 var_dump($this->date);
 $dd = date_create("@{$this->date}");
 date_sub($dd, date_interval_create_from_date_string("1 month"));
-$lm = date_format($dd, "mm");
+$lm = date_format($dd, "m");
+$yy = date_format($dd, "y");
+
+
+$dd = date_create("@{$this->date}"); //reset date for use again in next month's calcs.
+date_add($dd, "1 month");
+$nm = date_format($dd, "m");
+$ny = date_format($dd, "y");
 var_dump($lm);
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
 <div>
-    <a href="">Previous Month</a>
-    <a href="">Next Month</a>
+    <a href="month.php?month=$lm&year=$yy">Previous Month</a>
+    <a href="month.php?month=$nm&year=$ny">Next Month</a>
 </div>
 
 <div id="summary_container" >
@@ -26,9 +33,9 @@ var_dump($lm);
         <tfoot>
         <tr>
             <th colspan="2">Totals</th>
-            <td><?php echo Format::decimal_size($this->data['totals']['in']); ?></td>
-            <td><?php echo Format::decimal_size($this->data['totals']['out']); ?></td>
-            <td><?php echo Format::decimal_size($this->data['totals']['in'] + $this->data['totals']['out'] ); ?></td>
+            <td><?php echo $this->data['totals']['in']; ?></td>
+            <td><?php echo $this->data['totals']['out']; ?></td>
+            <td><?php echo $this->data['totals']['in'] + $this->data['totals']['out'] ; ?></td>
         </tr>
         </tfoot>
         <tbody>
