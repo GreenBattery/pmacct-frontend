@@ -2,16 +2,27 @@
 date_default_timezone_set(Config::$tz);
 $this->page_id = 'summary-month';
 var_dump($this->date);
-$dd = date_create("@{$this->date}");
-date_sub($dd, date_interval_create_from_date_string("1 month"));
-$lm = date_format($dd, "m");
-$yy = date_format($dd, "Y");
+
+$cm = date_format($this->date, "m"); //current month.
+
+$lm = ((int) date_format($this->date, "m") -1 ) % 12; //get prev month.
+
+$yy = date_format($this->date, "Y"); //this year.
+
+if ($lm > $cm) { // last month is greater than this month if we went into last year.
+    $yy--;
+}
 
 
-$dd = date_create("@{$this->date}"); //reset date for use again in next month's calcs.
-date_add($dd, date_interval_create_from_date_string("1 month"));
-$nm = date_format($dd, "m");
-$ny = date_format($dd, "Y");
+
+
+$ny = date_format($dd, "Y"); //next year.
+$nm = ((int) date_format($this->date, "m") + 1) % 12; //get next month.
+
+//if the next month obtained is less than curent month, it means it's the next year, so increment year.
+if ($nm < $cm) {
+    $ny++;
+}
 var_dump($lm);
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
