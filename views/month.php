@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set(Config::$tz);
 $this->page_id = 'summary-month';
 var_dump($this->date);
 $dd = date_create("@{$this->date}");
