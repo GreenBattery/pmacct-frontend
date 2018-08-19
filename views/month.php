@@ -87,7 +87,7 @@ var_dump($lm);
                     render: function(data, type, row) {
                         console.log(data);
                         console.log(type);
-                        return data.replace("foobar");
+                        return "foobar";
                     }
                 }
             ]
