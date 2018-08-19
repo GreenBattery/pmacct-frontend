@@ -85,6 +85,8 @@ var_dump($lm);
                 {
                     data: 'total',
                     render: function(data, type, row) {
+                        console.log(data);
+                        console.log(type);
                         return data.replace("foobar");
                     }
                 }
