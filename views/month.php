@@ -85,6 +85,7 @@ var_dump($lm);
                 {
                     data: 'total',
                     render: function(data, type, row) {
+                        console.log(type);
                         if (type === "export") {
                             return formatBytes(data);
                         }else {
