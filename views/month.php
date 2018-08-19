@@ -16,7 +16,7 @@ if ($lm > $cm) { // last month is greater than this month if we went into last y
 
 
 
-$ny = date_format("Y", $this->date); //next year.
+$ny = date("Y", $this->date); //next year.
 $nm = ((int) date("m", $this->date) + 1) % 12; //get next month.
 
 //if the next month obtained is less than curent month, it means it's the next year, so increment year.
@@ -76,6 +76,20 @@ var_dump($lm);
 <div id="byday">stats by day for this month</div>
 <script>
     $(function() {
-        $('#month-summary').DataTable();
+        var opts = {
+            columns: [
+                {data: 'IP'},
+                {data: 'Hostname'},
+                {data: 'in'},
+                {data: 'out'},
+                {
+                    data: 'total',
+                    render: function(data, type, row) {
+                        return data.replace("foobar");
+                    }
+                }
+            ]
+        }
+        $('#month-summary').DataTable(opts);
     })
 </script>
