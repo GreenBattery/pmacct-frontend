@@ -3,11 +3,11 @@ date_default_timezone_set(Config::$tz);
 $this->page_id = 'summary-month';
 var_dump($this->date);
 
-$cm = date_format($this->date, "m"); //current month.
+$cm = date_format("m", $this->date); //current month.
 
-$lm = ((int) date_format($this->date, "m") -1 ) % 12; //get prev month.
+$lm = ((int) date_format("m", $this->date) -1 ) % 12; //get prev month.
 
-$yy = date_format($this->date, "Y"); //this year.
+$yy = date_format("Y", $this->date); //this year.
 
 if ($lm > $cm) { // last month is greater than this month if we went into last year.
     $yy--;
@@ -16,8 +16,8 @@ if ($lm > $cm) { // last month is greater than this month if we went into last y
 
 
 
-$ny = date_format($dd, "Y"); //next year.
-$nm = ((int) date_format($this->date, "m") + 1) % 12; //get next month.
+$ny = date_format("Y", $this->date); //next year.
+$nm = ((int) date_format("m", $this->date) + 1) % 12; //get next month.
 
 //if the next month obtained is less than curent month, it means it's the next year, so increment year.
 if ($nm < $cm) {
