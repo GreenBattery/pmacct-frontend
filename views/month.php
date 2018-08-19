@@ -20,7 +20,7 @@ var_dump($lm);
 </div>
 
 <div id="summary_container" >
-    <table id="summary" class="datatable">
+    <table id="month-summary">
         <thead>
         <tr>
             <th>IP</th>
@@ -62,3 +62,8 @@ var_dump($lm);
 
 
 <div id="byday">stats by day for this month</div>
+<script>
+    $(function() {
+        $('#month-summary').DataTable();
+    })
+</script>
