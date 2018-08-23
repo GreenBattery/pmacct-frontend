@@ -95,6 +95,9 @@ var_dump($lm);
                     }
                 }
             ]
+            'footerCallback': function(row, data, start, end, display) {
+                
+            }
         }
         $('#month-summary').DataTable(opts);
     })
