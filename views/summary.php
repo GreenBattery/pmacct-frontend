@@ -17,9 +17,9 @@
 		<tfoot>
 			<tr>
 				<th colspan="2">Totals</th>
-				<td><?php echo Format::decimal_size($this->data['totals']['in']); ?></td>
-				<td><?php echo Format::decimal_size($this->data['totals']['out']); ?></td>
-				<td><?php echo Format::decimal_size($this->data['totals']['in'] + $this->data['totals']['out']); ?></td>
+				<td><?php echo Format::decimal_size($this->data['totals']['bytes_in']); ?></td>
+				<td><?php echo Format::decimal_size($this->data['totals']['bytes_out']); ?></td>
+				<td><?php echo Format::decimal_size($this->data['totals']['bytes_total']); ?></td>
 			</tr>
 		</tfoot>
 		<tbody>
