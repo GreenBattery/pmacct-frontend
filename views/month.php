@@ -126,7 +126,7 @@ if ($nm < $cm) {
                 }
             ],
             'footerCallback': function(row, data, start, end, display) {
-                console.log("footer " + data);
+                console.log( data);
             }
         }
         $('#month-summary').DataTable(opts);
