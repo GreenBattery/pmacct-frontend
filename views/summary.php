@@ -1,4 +1,4 @@
-<?php var_dump $this->data; ?>
+<?php var_dump ($this->data); ?>
 <div class="page-header">
     <H1>Summary for the month of <?= date("M, Y", $this->date); ?></H1>
 </div>
