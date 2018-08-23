@@ -124,6 +124,8 @@ if ($nm < $cm) {
             ],
             'footerCallback': function(row, data, start, end, display) {
                 console.log( data);
+                var api = this.api()
+                $(api.column(2).footer()).html("here!")
             }
         }
         $('#month-summary').DataTable(opts);
