@@ -27,10 +27,10 @@ if ($nm < $cm) {
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
 <div class="row">
     <div class="col-sm-5">
-        <a class="btn btn-outline-primary" href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
+        <a class="btn btn-primary" href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
     </div>
     <div class="col-sm-5">
-        <a class="btn btn-outline-primary" href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
+        <a class="btn btn-primary" href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
     </div>
 </div>
 
@@ -76,12 +76,10 @@ if ($nm < $cm) {
         </table>
     </div>
 
-    <div class="col-lg-5" id="chart">
+    <div class="col-lg-5" id="byday">
 
     </div>
 
-
-    <div id="byday">stats by day for this month</div>
 </div>
 
 <script>

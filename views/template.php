@@ -34,11 +34,10 @@
 
 <div class="container theme-showcase" role="main">
 	<?php echo $this->body ?>
-
 </div>
     <script>
         $(function() {
-            $('.datatable').DataTable();
+           // $('.datatable').DataTable();
         })
     </script>
 </body>
