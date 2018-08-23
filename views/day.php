@@ -2,14 +2,12 @@
 $this->page_id = 'summary-day';
 ?>
 
-
-<?php var_dump ($this->data); ?>
 <div class="page-header">
     <h1>Statistics for <?php echo date('Y-m-d', $this->date); ?></h1>
 </div>
 <div id="summary_container">
 
-    <table id="summary" class="datatable">
+    <table id="day-summary" class="datatable">
         <thead>
         <tr>
             <th>IP</th>
@@ -51,3 +49,58 @@ $this->page_id = 'summary-day';
 
     <div id="pie"></div>
 </div>
+<script>
+    $(function() {
+        var opts = {
+            columns: [
+                {data: 'IP'},
+                {data: 'Hostname'},
+                {
+                    data: 'in',
+                    render: function(data, type, row) {
+                        if (type === "display") {
+                            return formatBytes(data);
+                        }else {
+                            return data;
+                        }
+
+                    }
+                },
+                {
+                    data: 'out',
+                    render: function(data, type, row) {
+                        if (type === "display") {
+                            return formatBytes(data);
+                        }else {
+                            return data;
+                        }
+
+                    }
+                },
+                {
+                    data: 'total',
+                    render: function(data, type, row) {
+                        if (type === "display") {
+                            return formatBytes(data);
+                        }else {
+                            return data;
+                        }
+
+                    }
+                }
+            ],
+            'footerCallback': function(row, data, start, end, display) {
+                var api = this.api();
+                var inTotal = api.column(2).footer().innerText;
+                $(api.column(2).footer()).html(formatBytes(inTotal));
+
+                var outTotal = api.column(3).footer().innerText;
+                $(api.column(3).footer()).html(formatBytes(outTotal));
+
+                var sumTotal = api.column(4).footer().innerText;
+                $(api.column(4).footer()).html(formatBytes(sumTotal));
+            }
+        }
+        $('#day-summary').DataTable(opts);
+    })
+</script>
