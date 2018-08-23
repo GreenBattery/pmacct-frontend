@@ -26,9 +26,13 @@ if ($nm < $cm) {
 var_dump($lm);
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
-<div>
-    <a href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
-    <a href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
+<div class="row-fluid">
+    <div class="col-sm-5">
+        <a href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
+    </div>
+    <div class="col-sm-5">
+        <a href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
+    </div>
 </div>
 
 <div id="summary_container" >
