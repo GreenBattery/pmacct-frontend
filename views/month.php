@@ -76,7 +76,7 @@ if ($nm < $cm) {
         </table>
     </div>
 
-    <div class="col-lg-5" id="byday">
+    <div class="col-lg-4" id="byday">
 
     </div>
 
@@ -102,7 +102,7 @@ if ($nm < $cm) {
 
                     }
                 }
-            ]
+            ],
             'footerCallback': function(row, data, start, end, display) {
                 
             }
