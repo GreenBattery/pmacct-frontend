@@ -17,9 +17,9 @@
 		<tfoot>
 			<tr>
 				<th colspan="2">Totals</th>
-				<td><?php echo Format::decimal_size($this->data['totals']['bytes_in']); ?></td>
-				<td><?php echo Format::decimal_size($this->data['totals']['bytes_out']); ?></td>
-				<td><?php echo Format::decimal_size($this->data['totals']['bytes_total']); ?></td>
+				<td><?php echo $this->data['totals']['bytes_in']; ?></td>
+				<td><?php echo $this->data['totals']['bytes_out']; ?></td>
+				<td><?php echo $this->data['totals']['bytes_total']; ?></td>
 			</tr>
 		</tfoot>
 		<tbody>
@@ -27,8 +27,8 @@
 foreach ($this->data['data'] as $ip=>$row)
 {
     //var_dump($row);
-    $b_in = $row['udp']['bytes_in'] + $row['tcp']['bytes_in'] + $row['icmp']['bytes_in'];
-    $b_out = $row['udp']['bytes_out'] + $row['tcp']['bytes_out'] + $row['icmp']['bytes_out'];
+    $b_in = $row['bytes_in'] ;
+    $b_out = $row['bytes_out'];
     $b_t = $b_in + $b_out;
 	echo '
 			<tr data-in="', $b_in, '" data-out="', $b_out, '" data-total="', $b_t, '">
