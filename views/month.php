@@ -88,8 +88,30 @@ if ($nm < $cm) {
             columns: [
                 {data: 'IP'},
                 {data: 'Hostname'},
-                {data: 'in'},
-                {data: 'out'},
+                {
+                    data: 'in',
+                    render: function(data, type, row) {
+                        console.log(type);
+                        if (type === "display") {
+                            return formatBytes(data);
+                        }else {
+                            return data;
+                        }
+
+                    }
+                },
+                {
+                    data: 'out',
+                    render: function(data, type, row) {
+                        console.log(type);
+                        if (type === "display") {
+                            return formatBytes(data);
+                        }else {
+                            return data;
+                        }
+
+                    }
+                },
                 {
                     data: 'total',
                     render: function(data, type, row) {
@@ -104,7 +126,7 @@ if ($nm < $cm) {
                 }
             ],
             'footerCallback': function(row, data, start, end, display) {
-                
+                console.log("footer " + data);
             }
         }
         $('#month-summary').DataTable(opts);
