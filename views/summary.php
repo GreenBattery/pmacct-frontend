@@ -34,9 +34,9 @@ foreach ($this->data['data'] as $ip=>$row)
 			<tr data-in="', $b_in, '" data-out="', $b_out, '" data-total="', $b_t, '">
 				<td><a href="day_host.php?date=', date('Y-m-d', mktime()), '&ip=', urlencode($ip) , '">', $ip, '</a></td>
 				<td><a href="', date('Y-m-d', $this->date), '/', $ip , '/">', gethostbyaddr($ip), '</a></td>
-				<td>', Format::decimal_size($b_in), '</td>
-				<td>', Format::decimal_size($b_out), '</td>
-				<td>', Format::decimal_size($b_t), '</td>
+				<td>', $b_in, '</td>
+				<td>', $b_out, '</td>
+				<td>', $b_t, '</td>
 			</tr>';
 }
 ?>
