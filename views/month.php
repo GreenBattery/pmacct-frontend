@@ -125,13 +125,21 @@ if ($nm < $cm) {
             'footerCallback': function(row, data, start, end, display) {
                 var api = this.api();
                 var inTotal = api.column(2).footer().innerText;
-                $(api.column(2).footer()).html(formatBytes(inTotal));
+                if ($.isNumeric(inTotal)) {
+                    $(api.column(2).footer()).html(formatBytes(inTotal));
+                }
+
 
                 var outTotal = api.column(3).footer().innerText;
-                $(api.column(3).footer()).html(formatBytes(outTotal));
+                if ($.isNumeric(outTotal)) {
+                    $(api.column(3).footer()).html(formatBytes(outTotal));
+                }
+
 
                 var sumTotal = api.column(4).footer().innerText;
-                $(api.column(4).footer()).html(formatBytes(sumTotal));
+                if ($.isNumeric(sumTotal)) {
+                    $(api.column(4).footer()).html(formatBytes(sumTotal));
+                }
             }
         }
         $('#month-summary').DataTable(opts);

@@ -15,7 +15,7 @@ $start_date = mktime(0,0,0, date('n'), 1, date('Y'));
 $data = Data_Summary::month($start_date);
 
 
-View::factory('summary')
+View::factory('month')
     ->set('date', $start_date)
     ->set('data', $data)
     ->render();
