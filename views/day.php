@@ -32,8 +32,8 @@ $this->page_id = 'summary-day';
         foreach ($this->data['data'] as $ip=>$row)
         {
             //var_dump($row);
-            $b_in = $row['bytes_in'] ;
-            $b_out = $row['bytes_out'];
+            $b_in = $row['bytes_in'] ?? 0 ;
+            $b_out = $row['bytes_out'] ?? 0;
             $b_t = $b_in + $b_out;
             echo '
 			<tr data-in="', $b_in, '" data-out="', $b_out, '" data-total="', $b_t, '">
