@@ -91,7 +91,6 @@ if ($nm < $cm) {
                 {
                     data: 'in',
                     render: function(data, type, row) {
-                        console.log(type);
                         if (type === "display") {
                             return formatBytes(data);
                         }else {
@@ -103,7 +102,6 @@ if ($nm < $cm) {
                 {
                     data: 'out',
                     render: function(data, type, row) {
-                        console.log(type);
                         if (type === "display") {
                             return formatBytes(data);
                         }else {
@@ -115,7 +113,6 @@ if ($nm < $cm) {
                 {
                     data: 'total',
                     render: function(data, type, row) {
-                        console.log(type);
                         if (type === "display") {
                             return formatBytes(data);
                         }else {
