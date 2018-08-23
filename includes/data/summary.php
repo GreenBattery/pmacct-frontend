@@ -258,6 +258,7 @@ class Data_Summary
 		
 		foreach ($results as $row)
 		{
+            $data[$row['ip']]['bytes_in'] = 0; //create it.
 		    $data[$row['ip']]['bytes_in'] = (int)$row['bytes_in'];
 		    $totals['bytes_in'] += (int) $row['bytes_in'];
 
@@ -277,6 +278,7 @@ class Data_Summary
         foreach ($results as $row)
         {
             //var_dump($row);
+            $data[$row['ip']]['bytes_out'] = 0; //create it. 
             $data[$row['ip']]['bytes_out'] = (int) $row['bytes_out'];
             $totals['bytes_out'] += (int) $row['bytes_out'];
 
