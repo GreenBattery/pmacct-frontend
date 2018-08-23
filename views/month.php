@@ -1,7 +1,6 @@
 <?php
 date_default_timezone_set(Config::$tz);
 $this->page_id = 'summary-month';
-var_dump($this->date);
 
 $cm = date("m", $this->date); //current month.
 
@@ -23,15 +22,15 @@ $nm = ((int) date("m", $this->date) + 1) % 12; //get next month.
 if ($nm < $cm) {
     $ny++;
 }
-var_dump($lm);
+
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
 <div class="row">
     <div class="col-sm-5">
-        <a href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
+        <a class="btn" href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
     </div>
     <div class="col-sm-5">
-        <a href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
+        <a class="btn" href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
     </div>
 </div>
 
