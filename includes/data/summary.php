@@ -92,10 +92,11 @@ class Data_Summary
 
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
-                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'total' =>0
                 );
 
             }
@@ -103,6 +104,8 @@ class Data_Summary
 
             //populate the values accordingly.
             $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
+            $data[$row['ip']][$row['protocol']]['total'] += $row['bytes_out'];
+            $data[$row['ip']]['total'] += $row['bytes_out'];
 
             $totals[$row['protocol']]['out'] += $row['bytes_out'];
             $totals['out'] += $row['bytes_out'];
@@ -131,15 +134,18 @@ class Data_Summary
             if (!array_key_exists( $row['ip'], $data)) {
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
-                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0),
-                    'other' => array('bytes_in'=>0, 'bytes_out' => 0),
+                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'other' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'total'=>0
                 );
 
             }
 
             $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
+            $data[$row['ip']][$row['protocol']]['total'] += $row['bytes_in'];
+            $data[$row['ip']]['total'] += $row['bytes_in'];
 
             $totals[$row['protocol']]['in'] += $row['bytes_in'];
             $totals['in'] += $row['bytes_in'];
@@ -150,7 +156,51 @@ class Data_Summary
 		//perform additional categorisation
         $res = array('data'=> $data, 'totals'=>$totals);
 
+        //read hostnames from dnsmasq if exists/possible
+        ///var/lib/misc/dnsmasq.leases
+
+        //example line from dnsmasq.leases
+        //1531007751 f4:f5:d8:ad:97:9c 192.168.1.183 Chromecast-Ultra *
+        //after second space, the IP is shown, followed by hostname, and mac address or *.
+
+        $hostnames = array();
+        $fn = '/var/lib/misc/dnsmasq.leases';
+        $fh = fopen($fn, 'r');
+        $contents = fread($fh, filesize($fn));
+        $lines = explode("\n", $contents);
+        $contents = null;
+        fclose($fh);
+
+        foreach ($lines as $l) {
+
+            if (strlen(trim($l))== 0) {
+                continue; //skip empty lines.
+            }
+            $a = strpos($l, " ");
+            if ($a >= 0) {
+                $b = strpos($l, " ", $a+1);
+                if ($b >=0 ) {
+                    //now we're at ip
+                    $c = strpos($l, " ", $b+1); //end of IP
+
+                    $ip = trim(substr($l, $b, $c - $b));
+
+
+                    $d = strpos($l, " ", $c+1);
+
+                    $hn = substr($l, $c, $d - $c);
+
+                    $hostnames[$ip] = trim($hn);
+                }else {
+                    break; //if space not found then not valid content
+                }
+            }else {
+                break; //not valid content
+            }
+        }
+        //var_dump($hostnames);
         //return data
+        $res['hostnames'] = $hostnames;
         return $res;
 	}
 	
@@ -232,6 +282,45 @@ class Data_Summary
 
 
         }
+
+        $hostnames = array();
+        $fn = '/var/lib/misc/dnsmasq.leases';
+        $fh = fopen($fn, 'r');
+        $contents = fread($fh, filesize($fn));
+        $lines = explode("\n", $contents);
+        $contents = null;
+        fclose($fh);
+
+        foreach ($lines as $l) {
+
+            if (strlen(trim($l))== 0) {
+                continue; //skip empty lines.
+            }
+            $a = strpos($l, " ");
+            if ($a >= 0) {
+                $b = strpos($l, " ", $a+1);
+                if ($b >=0 ) {
+                    //now we're at ip
+                    $c = strpos($l, " ", $b+1); //end of IP
+
+                    $ip = trim(substr($l, $b, $c - $b));
+
+
+                    $d = strpos($l, " ", $c+1);
+
+                    $hn = substr($l, $c, $d - $c);
+
+                    $hostnames[$ip] = trim($hn);
+                }else {
+                    break; //if space not found then not valid content
+                }
+            }else {
+                break; //not valid content
+            }
+        }
+        var_dump($hostnames);
+        //return data
+        $res['hostnames'] = $hostnames;
 
 		$totals['bytes_total'] = $totals['bytes_in'] + $totals['bytes_out'];
 		return array(
