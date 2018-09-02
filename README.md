@@ -1,9 +1,8 @@
-pmacct frontend
-===============
+# pmacct frontend
 
 Quick statistics frontend for [pmacct](http://www.pmacct.net/). 
 
-#Usage
+# Usage
 
 To use this, you will need Mysql and pmacct. Pmacct collects the relevant statistics
 using the pcap module and stores them in mysql in a bespoke fashion as specified in the
@@ -19,12 +18,12 @@ The application can then be deployed in its entirety in the *WEB ROOT* of your w
  directly. Example, if deployed in a folder called "stats" then you should be able to access it under /stats/
  at your hostname (using a web browser).
 
-##Requirements
+## Requirements
 * Php 7.2
 * Apache 2.4
 * Mysql 5.7
 
-#Good to Know
+# Good to Know
 Be advised that the logging level is pretty detailed, being hourly, and per target Host and Destination Port number,
 and IP protocol.This means that it creates a pretty detailed picture of what the hosts on 
 your LAN have been up to. Time permitting, in the future, I intend to make this retain only the last one month 
