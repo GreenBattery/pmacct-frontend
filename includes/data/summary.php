@@ -156,51 +156,9 @@ class Data_Summary
 		//perform additional categorisation
         $res = array('data'=> $data, 'totals'=>$totals);
 
-        //read hostnames from dnsmasq if exists/possible
-        ///var/lib/misc/dnsmasq.leases
-
-        //example line from dnsmasq.leases
-        //1531007751 f4:f5:d8:ad:97:9c 192.168.1.183 Chromecast-Ultra *
-        //after second space, the IP is shown, followed by hostname, and mac address or *.
-
-        $hostnames = array();
-        $fn = '/var/lib/misc/dnsmasq.leases';
-        $fh = fopen($fn, 'r');
-        $contents = fread($fh, filesize($fn));
-        $lines = explode("\n", $contents);
-        $contents = null;
-        fclose($fh);
-
-        foreach ($lines as $l) {
-
-            if (strlen(trim($l))== 0) {
-                continue; //skip empty lines.
-            }
-            $a = strpos($l, " ");
-            if ($a >= 0) {
-                $b = strpos($l, " ", $a+1);
-                if ($b >=0 ) {
-                    //now we're at ip
-                    $c = strpos($l, " ", $b+1); //end of IP
-
-                    $ip = trim(substr($l, $b, $c - $b));
-
-
-                    $d = strpos($l, " ", $c+1);
-
-                    $hn = substr($l, $c, $d - $c);
-
-                    $hostnames[$ip] = trim($hn);
-                }else {
-                    break; //if space not found then not valid content
-                }
-            }else {
-                break; //not valid content
-            }
-        }
         //var_dump($hostnames);
         //return data
-        $res['hostnames'] = $hostnames;
+        $res['hostnames'] = Data_Summary::read_leases();
         return $res;
 	}
 	
@@ -285,50 +243,11 @@ class Data_Summary
 
         }
 
-        $hostnames = array();
-
-        //if using dnsmasq, we'd like to use the hostnames to improve our tables in the future.
-        $fn = '/var/lib/misc/dnsmasq.leases';
-        $fh = fopen($fn, 'r');
-        $contents = fread($fh, filesize($fn));
-        $lines = explode("\n", $contents);
-        $contents = null;
-        fclose($fh);
-
-        foreach ($lines as $l) {
-
-            if (strlen(trim($l))== 0) {
-                continue; //skip empty lines.
-            }
-            $a = strpos($l, " ");
-            if ($a >= 0) {
-                $b = strpos($l, " ", $a+1);
-                if ($b >=0 ) {
-                    //now we're at ip
-                    $c = strpos($l, " ", $b+1); //end of IP
-
-                    $ip = trim(substr($l, $b, $c - $b));
-
-
-                    $d = strpos($l, " ", $c+1);
-
-                    $hn = substr($l, $c, $d - $c);
-
-                    $hostnames[$ip] = trim($hn);
-                }else {
-                    break; //if space not found then not valid content
-                }
-            }else {
-                break; //not valid content
-            }
-        }
-        //return data
-        $res['hostnames'] = $hostnames;
-
 		$totals['bytes_total'] = $totals['bytes_in'] + $totals['bytes_out'];
 		return array(
 			'data' => $data,
-			'totals' => $totals
+			'totals' => $totals,
+            'hostnames'=> Data_Summary::read_leases()
 		);
 	}
 	
@@ -376,8 +295,56 @@ class Data_Summary
 			$row->bytes_total = $row->bytes_in + $row->bytes_out;
 			$data[$row->ip][date('Y-m-d', $row->date)] =  $row->bytes_total;
 		}
-		
+		$data['hostnames'] = Data_Summary::read_leases();
 		return $data;
 	}
+
+
+	/** read dhcp lease info from dnsmasq default location
+	 *
+     * @param none
+     * @return array of dhcp hostnames keyed by IP address (IP => hostname)
+     *
+     * keep in mind that the hostname is not guaranteed to exist in dhcp. it is an * if no hostname.
+	 */
+	private static function read_leases() {
+        $fn = '/var/lib/misc/dnsmasq.leases';
+        $fh = fopen($fn, 'r');
+        $contents = fread($fh, filesize($fn));
+        $lines = explode("\n", $contents);
+        $contents = null;
+        fclose($fh);
+
+        $hostnames = array();
+
+        foreach ($lines as $l) {
+
+            if (strlen(trim($l))== 0) {
+                continue; //skip empty lines.
+            }
+            $a = strpos($l, " ");
+            if ($a >= 0) {
+                $b = strpos($l, " ", $a+1);
+                if ($b >=0 ) {
+                    //now we're at ip
+                    $c = strpos($l, " ", $b+1); //end of IP
+
+                    $ip = trim(substr($l, $b, $c - $b));
+
+
+                    $d = strpos($l, " ", $c+1);
+
+                    $hn = substr($l, $c, $d - $c);
+
+                    $hostnames[$ip] = trim($hn);
+                }else {
+                    break; //if space not found then not valid content
+                }
+            }else {
+                break; //not valid content
+            }
+        }
+        return $hostnames;
+    }
 }
 ?>

@@ -1,5 +1,7 @@
 <?php
 $this->page_id = 'summary-day';
+$data = $this->data;
+var_dump($data);
 ?>
 
 <div class="page-header">
@@ -33,10 +35,11 @@ $this->page_id = 'summary-day';
             $b_in = $row['bytes_in'] ?? 0 ;
             $b_out = $row['bytes_out'] ?? 0;
             $b_t = $b_in + $b_out;
+            $hname = array_key_exists($ip, $data['hostnames']) ? $data['hostnames'][$ip] : $ip;
             echo '
 			<tr data-in="', $b_in, '" data-out="', $b_out, '" data-total="', $b_t, '">
 				<td><a href="host.php?date=', date('Y-m-d', mktime()), '&ip=', urlencode($ip) , '">', $ip, '</a></td>
-				<td><a href="', date('Y-m-d', $this->date), '/', $ip , '/">', gethostbyaddr($ip), '</a></td>
+				<td>', $hname, '</td>
 				<td>', $b_in, '</td>
 				<td>', $b_out, '</td>
 				<td>', $b_t, '</td>
