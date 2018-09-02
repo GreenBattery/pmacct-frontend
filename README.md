@@ -33,5 +33,7 @@ Naturally, you should take every necessary precaution to protect the database fr
 mechanisms provided by Mysql and your firewall of choice. 
 
 Per the detailed logging, disk usage can be high (although not high by modern standards) -- example, on a 32-host LAN,
-the mysql database has consumed about 530MB of disk space without any form of database maintenance and pruning. This
+the mysql database has consumed about 530MB of disk space over the past 4 months without any form of database maintenance and pruning. This
 however depends a bit on the amount of distinctive hosts and ports that the hosts on the LAN communicate with.
+
+With data aggregation and pruning functionality in the future, disk usage should be lower.

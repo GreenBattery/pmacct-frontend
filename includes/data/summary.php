@@ -286,6 +286,8 @@ class Data_Summary
         }
 
         $hostnames = array();
+
+        //if using dnsmasq, we'd like to use the hostnames to improve our tables in the future.
         $fn = '/var/lib/misc/dnsmasq.leases';
         $fh = fopen($fn, 'r');
         $contents = fread($fh, filesize($fn));
@@ -320,7 +322,6 @@ class Data_Summary
                 break; //not valid content
             }
         }
-        var_dump($hostnames);
         //return data
         $res['hostnames'] = $hostnames;
 
