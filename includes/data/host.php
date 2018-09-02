@@ -25,81 +25,99 @@ class Data_Host
         $table_out = "outbound_" . date("mY", $start_date);
 
 
-        //handle inbound stats
-		$query = Database::getDB()->prepare('
-			SELECT ip_dst as ip, stamp_inserted as hour, SUM(bytes) as bytes_in
+        $data = array();
+        $totals = array(
+            'bytes_out' => 0,
+            'bytes_in' => 0,
+            'bytes_total' => 0,
+        );
+
+        //handle inbound stats.
+        //if IP is empty, we should redirect to day view.
+		$query = "";
+        if ($ip === "") {
+
+        }else {
+
+            //inbound stats for specific IP
+            $query = Database::getDB()->prepare('
+			SELECT ip_dst as ip, stamp_inserted as hour, SUM(bytes) as bytes_in, ip_proto as protocol
 			FROM ' . $table_in. '
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-				AND ip_dst = :ip GROUP BY hour
+				AND ip_dst = :ip GROUP BY hour, protocol
 			ORDER BY stamp_inserted ASC');
-			
-		$query->execute(array(
-			':start_date' => $start_date,
-			':end_date' => $end_date,
-			':ip' => $ip
-		));
-		
-		$data = array();
-		$totals = array(
-			'bytes_out' => 0,
-			'bytes_in' => 0,
-			'bytes_total' => 0,
-		);
-		
-		while ($row = $query->fetch())
-		{
 
-		    //var_dump($row);
+            $query->execute(array(
+                ':start_date' => $start_date,
+                ':end_date' => $end_date,
+                ':ip' => $ip
+            ));
 
-		    $h = (string) explode(" ", $row['hour'])[1];
+            while ($row = $query->fetch(PDO::FETCH_ASSOC))
+            {
 
-		    //var_dump($row);
+                //var_dump($row);
 
-			$data[$h] = array(); // each hour will be an array of bytes in and out.
+                $h = (string) explode(" ", $row['hour'])[1];
 
-            $data[$h]['bytes_in'] = (int) $row['bytes_in'];
-			
-			$totals['bytes_in'] += $row['bytes_in'];
+                //var_dump($row);
+                if (!array_key_exists($h, $data)) {
+                    $data[$h] = array(); // each hour will be an array of bytes in and out.
+                    $data[$h]['bytes_in'] = (int) $row['bytes_in'];
+                    $data[$h]['bytes_out'] = 0;
+                    $data[$h]['bytes_total'] = 0; //init totals tally for this slot.
+                }else {
+                    $data[$h]['bytes_in'] += (int) $row['bytes_in'];
+                }
 
-			$data[$h]['bytes_total'] =  (int) $row['bytes_in']; //add inbound bytes to totals for this hour.
 
-			$totals['bytes_total'] += $row['bytes_in'];
+
+                $totals['bytes_in'] += $row['bytes_in'];
+
+                $data[$h]['bytes_total'] +=  (int) $row['bytes_in']; //add inbound bytes to totals for this hour.
+
+                $totals['bytes_total'] += $row['bytes_in'];
+            }
+
+            //now outbound for specific IP
+            $query = Database::getDB()->prepare('
+				SELECT ip_src as ip, stamp_inserted as hour, SUM(bytes) as bytes_out
+				FROM ' . $table_out . '
+				WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+					AND ip_src = :ip GROUP BY hour
+				ORDER BY stamp_inserted ASC');
+
+            $query->execute(array(
+                ':start_date' => $start_date,
+                ':end_date' => $end_date,
+                ':ip' => $ip
+            ));
+
+            while ($row = $query->fetch(PDO::FETCH_ASSOC))
+            {
+
+                $h = (string) explode(" ", $row['hour'])[1];
+
+                //var_dump($row);
+                if (!array_key_exists($h, $data)) {
+                    $data[$h] = array(); // each hour will be an array of bytes in and out.
+                    $data[$h]['bytes_out'] = (int) $row['bytes_out'];
+                    $data[$h]['bytes_in']= 0;
+                    $data[$h]['bytes_total'] = 0;
+                }else {
+                    $data[$h]['bytes_out'] += (int) $row['bytes_out'];
+                }
+
+
+
+                $totals['bytes_out'] += $row['bytes_out'];
+
+                $data[$h]['bytes_total'] +=  (int) $row['bytes_out']; //add inbound bytes to totals for this hour.
+
+                $totals['bytes_total'] += $row['bytes_out'];
+            }
 		}
 
-
-		//handle outbound stats
-        $query = Database::getDB()->prepare('
-			SELECT ip_src as ip, stamp_inserted as hour, SUM(bytes) as bytes_out
-			FROM ' . $table_out. '
-			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-				AND ip_src = :ip GROUP BY hour
-			ORDER BY stamp_inserted ASC');
-
-        $query->execute(array(
-            ':start_date' => $start_date,
-            ':end_date' => $end_date,
-            ':ip' => $ip
-        ));
-
-        while ($row = $query->fetch())
-        {
-            $h = (string) explode(" ", $row['hour'])[1];
-            $data[$h]['bytes_out'] =(int)  $row['bytes_out'];
-
-            $totals['bytes_out'] += $row['bytes_out'];
-
-            $data[$h]['bytes_total'] =  $row['bytes_out'] + ($data[$h]['bytes_total'] ?? 0); //add outbound bytes to totals for this hour
-
-            $data[$h]['bytes_total'] += $row['bytes_out']; //add outbound bytes to totals for this hour
-
-            $data[$h]['bytes_total'] =  $row['bytes_out'] + ($data[$h]['bytes_total'] ?? 0); //add outbound bytes to totals for this hour
-
-            $data[$h]['bytes_total'] =  $row['bytes_out'] + ($data[$h]['bytes_total'] ?? 0); //add outbound bytes to totals for this hour
-
-            $data[$h]['bytes_total'] =  $row['bytes_out'] + ($data[$h]['bytes_total'] ?? 0); //add outbound bytes to totals for this hour
-
-            $totals['bytes_total'] += $row['bytes_out'];
-        }
 		return array(
 			'data' => $data,
 			'totals' => $totals
