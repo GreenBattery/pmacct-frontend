@@ -20,7 +20,7 @@
     <div class="container">
         <div class="navbar-header">
 
-            <a class="navbar-brand" href="#">Pmacct Frontend</a>
+            <a class="navbar-brand" href="#">Stats Frontend</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">

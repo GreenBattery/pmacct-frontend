@@ -85,6 +85,7 @@ if ($nm < $cm) {
 <script>
     $(function() {
         var opts = {
+            order: [[4, "desc"]],
             columns: [
                 {data: 'IP'},
                 {data: 'Hostname'},
