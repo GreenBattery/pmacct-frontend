@@ -1,7 +1,6 @@
 <?php
 $this->page_id = 'summary-day';
 $data = $this->data;
-var_dump($data);
 ?>
 
 <div class="page-header">
@@ -55,6 +54,7 @@ var_dump($data);
 <script>
     $(function() {
         var opts = {
+            order: [[4, "desc"]],
             columns: [
                 {data: 'IP'},
                 {data: 'Hostname'},
