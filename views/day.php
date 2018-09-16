@@ -1,12 +1,22 @@
 <?php
 $this->page_id = 'summary-day';
 $data = $this->data;
+$yest = $this->date - 86400;
+$tomorrow = $this->date + 86400;
+
 ?>
 
 <div class="page-header">
     <h1>Statistics for <?php echo date('Y-m-d', $this->date); ?></h1>
 </div>
-<div id="summary_container">
+<div id="summary_container container">
+<div class="row">
+    <div class="pull-left"><a class="btn btn-primary" href="day.php?date=<?=$yest?>">Previous Day</a></div>
+    <div class="pull-right"><a class="btn btn-primary" href="day.php?date=<?=$tomorrow?>">Following Day</a></div>
+
+</div>
+    <div class="row">
+
 
     <table id="day-summary" class="datatable">
         <thead>
@@ -39,9 +49,9 @@ $data = $this->data;
 			<tr data-in="', $b_in, '" data-out="', $b_out, '" data-total="', $b_t, '">
 				<td><a href="host.php?date=', date('Y-m-d', mktime()), '&ip=', urlencode($ip) , '">', $ip, '</a></td>
 				<td>', $hname, '</td>
-				<td>', $b_in, '</td>
-				<td>', $b_out, '</td>
-				<td>', $b_t, '</td>
+				<td> ', $b_in, '</td>
+				<td> ', $b_out, '</td>
+				<td> ', $b_t, '</td>
 			</tr>';
         }
         ?>
@@ -50,6 +60,7 @@ $data = $this->data;
     </table>
 
     <div id="pie"></div>
+</div>
 </div>
 <script>
     $(function() {

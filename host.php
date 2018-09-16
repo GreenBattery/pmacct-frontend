@@ -17,10 +17,11 @@ if (array_key_exists("date", $_GET)) {
 
 $ip = "";
 //if no IP supplied, should show all hosts
+
 if(array_key_exists("ip", $_GET)) {
     $ip = $_GET['ip']; //should validate this?
 } else {
-    header("Location: ./day.php");
+    header("Location: ./day.php?date=$date");
 }
 
 $data = Data_Host::day($ip, $date);

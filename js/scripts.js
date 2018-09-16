@@ -1,6 +1,8 @@
 // based on github gist: https://gist.github.com/trevershick/737205b0ba79d8877a43
 function formatBytes(bytes) {
-    if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
+    if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) {
+        return '-err-';
+    }
     var precision = 2;
 
     if (bytes <= 0){
