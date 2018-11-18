@@ -72,6 +72,10 @@ class Data_Summary
 
         }
 
+        //if the summary date is later than last day of the month, we don't need any computation.
+        if ($date >= $end_date) {
+            $date = $end_date; //make them equal and query should produce no data.
+        }
 
 		//we need to fill in the blanks from the raw data.
 		//$data =  self::summary($date, $end_date);
