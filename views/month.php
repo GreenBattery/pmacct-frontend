@@ -58,16 +58,16 @@ if ($nm < $cm) {
             <?php
             foreach ($this->data['data'] as $ip=>$row)
             {
-                $b_in = $row['udp']['bytes_in'] + $row['tcp']['bytes_in'] + $row['icmp']['bytes_in'];
-                $b_out = $row['udp']['bytes_out'] + $row['tcp']['bytes_out'] + $row['icmp']['bytes_out'];
+                $b_in = $row['bytes_in'];
+                $b_out = $row['bytes_out'];
                 $b_t = $b_in + $b_out;
                 echo '
 			<tr data-in="', $b_in, '" data-out="', $b_out, '" data-total="', $b_t, '">
 				<td><a href="host.php?date=', date('Y-m-d', mktime()), '&ip=', urlencode($ip) , '">', $ip, '</a></td>
 				<td><a href="', date('Y-m-d', $this->date), '/', $ip , '/">', gethostbyaddr($ip), '</a></td>
-				<td>', $b_in, '</td>
-				<td>', $b_out, '</td>
-				<td>', $b_t, '</td>
+				<td>', htmlentities($b_in), '</td>
+				<td>', htmlentities($b_out), '</td>
+				<td>', htmlentities($b_t), '</td>
 			</tr>';
             }
             ?>

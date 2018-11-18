@@ -32,20 +32,53 @@ class Data_Summary
 		// Calculate end of this month
 
         //var_dump($date);
+
+        //right now
+        $ctime = mktime(); //current timesamp for use in main_summary.
+        $cmonth = date("mY", $date); //get the MMYYYY to use as the duration key in main_summary table.
+
         $last_day = date('t', $date); //get the last day of this month from timestamp.
 
-        //var_dump("lastday: " . $last_day . " of " . date('n', $date));
-
-        //var_dump($date);
         //get the epoch in localtime?
 		$end_date = mktime(23, 59, 59, date('n', $date), $last_day);
-		//var_dump($end_date);
-		
+
+		//retrieve from summary tables to help speed things up.
+		$sq = Database::getDB()->prepare("
+          SELECT 
+            * 
+          FROM 
+            main_summary 
+          WHERE 
+            duration_type = 'month' and 
+            duration = :duration
+          ");
+
+		$sq->execute([':duration' => $cmonth]);
+
+		$prev_stats = $sq->fetchAll(PDO::FETCH_ASSOC);
+
+        if($prev_stats === false) {
+
+            var_dump($sq->errorInfo());
+        }
+
+		//if $res is not empty, then we have some summaries and we need to only compute raw data since last summary.
+        $last_summary = null;
+        if (count($prev_stats) > 0) {
+            $last_summary = $prev_stats[0]['stamp_inserted']; //this reflects last time stats were cached.
+
+            //calculate stats only from this date onwards.
+            $date = strtotime($last_summary);
+
+        }
+
+
+		//we need to fill in the blanks from the raw data.
 		//$data =  self::summary($date, $end_date);
 
         //make the table name in _mmYY format. for inbound table
-        $table_in = "inbound_" . date("mY", $date);
-        $table_out = "outbound_" . date("mY", $end_date);
+        $table_in = "inbound_" . $cmonth;
+        $table_out = "outbound_" . $cmonth;
 
         $query = Database::getDB()->prepare("
 			SELECT ip_src AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_out, ip_proto AS protocol, dst_port
@@ -58,27 +91,25 @@ class Data_Summary
             ':end_date' => $end_date,
         ));
 
-        $data = array(); // prepare results array.
+        //initialise the totals array.
         $totals = array(
             'in'=>0,
-            'out'=>0,
-            'tcp'=> array(
-                'in'=> 0,
-                'out'=>0
-            ),
-            'udp'=> array(
-                'in'=>0,
-                'out'=>0
-            ),
-            'icmp'=> array(
-                'in'=>0,
-                'out'=>0
-            ),
-            'other'=> array(
-                'in'=>0,
-                'out'=>0
-            )
+            'out'=>0
         );
+
+        $data = []; // prepare results array.
+        //prefill the data and totals arrays with previously cached stats.
+        foreach ($prev_stats as $pstat) {
+            $data[$pstat['ip']]['bytes_in'] = $pstat['bytes_in'];
+            $data[$pstat['ip']]['bytes_out'] = $pstat['bytes_out'];
+            $data[$pstat['ip']]['total'] = $pstat['bytes_in'] + $pstat['bytes_out'];
+
+            $totals['in'] += $pstat['bytes_in'];
+            $totals['out'] += $pstat['bytes_out'];
+        }
+
+        $month_data = [];//we'll compute the data for main_summary table here too.
+
 
 
         while ($row = $query->fetch(PDO::FETCH_NAMED))
@@ -87,27 +118,36 @@ class Data_Summary
             if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
                 $row['protocol'] = 'other';
             }
-            //var_dump($row);
+
             if (!array_key_exists( $row['ip'], $data)) {
 
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
-                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
-                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
-                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
-                    'other' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
+                    'bytes_in' => 0,
+                    'bytes_out' => 0,
                     'total' =>0
                 );
 
             }
 
+            if (!array_key_exists($row['ip'], $month_data)) { //init month data too if necessary.
+                $month_data[$row['ip']] = [
+                    'duration_type' => 'month',
+                    'duration' => $cmonth,
+                    'bytes_in' => 0,
+                    'bytes_out' => 0,
+                    'stamp_inserted' => $ctime
+                ];
+            }
+
 
             //populate the values accordingly.
-            $data[$row['ip']][$row['protocol']]['bytes_out'] += $row['bytes_out'];
-            $data[$row['ip']][$row['protocol']]['total'] += $row['bytes_out'];
+            $data[$row['ip']]['bytes_out'] += $row['bytes_out'];
             $data[$row['ip']]['total'] += $row['bytes_out'];
 
-            $totals[$row['protocol']]['out'] += $row['bytes_out'];
+            //update month data too
+            $month_data[$row['ip']]['bytes_out'] += $row['bytes_out'];
+
             $totals['out'] += $row['bytes_out'];
 
         }
@@ -124,6 +164,8 @@ class Data_Summary
             ':end_date' => $end_date,
         ));
 
+
+        //process inbound stats.
         while ($row = $query->fetch(PDO::FETCH_NAMED))
         {
             //collapse uninteresting protocols to 'other'
@@ -134,24 +176,141 @@ class Data_Summary
             if (!array_key_exists( $row['ip'], $data)) {
                 //initialise all fields for this IP
                 $data[$row['ip']] = array(
-                    'udp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
-                    'tcp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
-                    'icmp' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
-                    'other' => array('bytes_in'=>0, 'bytes_out' => 0, 'total'=>0),
-                    'total'=>0
+                    'bytes_in' => 0,
+                    'bytes_out' => 0,
+                    'total' =>0
                 );
 
             }
 
-            $data[$row['ip']][$row['protocol']]['bytes_in'] += $row['bytes_in'];
-            $data[$row['ip']][$row['protocol']]['total'] += $row['bytes_in'];
+            if (!array_key_exists($row['ip'], $month_data)) { //init month data too if necessary.
+                $month_data[$row['ip']] = [
+                    'duration_type' => 'month',
+                    'duration' => $cmonth,
+                    'bytes_in' => 0,
+                    'bytes_out' => 0,
+                    'stamp_inserted' => $ctime
+                ];
+            }
+
+            $data[$row['ip']]['bytes_in'] += $row['bytes_in'];
             $data[$row['ip']]['total'] += $row['bytes_in'];
 
-            $totals[$row['protocol']]['in'] += $row['bytes_in'];
+            $month_data[$row['ip']]['bytes_in'] += $row['bytes_in'];
+
             $totals['in'] += $row['bytes_in'];
 
         }
 
+
+        //stuff this data into the main_summary table to speed up future lookups for month stats.
+
+        foreach($month_data as $ip=>$stats) {
+            //if this stat exists in the table, then we need to update by adding to current data. else, insert.
+            $sq1 = Database::getDB()->prepare("
+                select * 
+                from 
+                  main_summary 
+                where 
+                  ip=:ip_addr and 
+                  duration_type= 'month' and 
+                  duration = :duration"
+            );
+
+            $sq1->execute([
+                ":ip_addr" => $ip,
+                ':duration' => $cmonth
+            ]);
+
+            //the query above should yield only one result.
+            $res = $sq1->fetchAll(PDO::FETCH_NAMED)[0] ?? [];
+
+            if (count($res) > 0 ) { //value exists, update it.
+                $bytes_in = $res['bytes_in'] + $stats['bytes_in'];
+                $bytes_out = $res['bytes_out'] + $stats['bytes_out'];
+
+                $sq3 = Database::getDB()->prepare("
+                    UPDATE main_summary
+                    set
+                      bytes_in = :bytes_in,
+                      bytes_out = :bytes_out,
+                      stamp_inserted = FROM_UNIXTIME(:stamp_inserted)
+                    WHERE 
+                      id = :id
+                ");
+
+                $res3 = $sq3->execute([
+                    ':bytes_in' => $bytes_in,
+                    ':bytes_out' => $bytes_out,
+                    'stamp_inserted' => $ctime,
+                    ':id' => $res['id']
+                ]);
+
+                //check result of query.
+                if (!$res3) {
+                    //write a message to syslog.
+                    syslog(LOG_NOTICE,"failed to UPDATE SUMMARY 'month' data for $ip, dur: $cmonth ");
+                }
+
+
+
+            } else {
+                //insert value.
+                $sq2 = Database::getDB()->prepare("
+                    INSERT into main_summary 
+                    values (
+                      null,
+                      :ip_addr,
+                      'month',
+                      :duration,
+                      :bytes_in,
+                      :bytes_out,
+                      FROM_UNIXTIME(:stamp_inserted)
+                    )
+                ");
+
+                $res2 = $sq2->execute([
+                    ':ip_addr'=> $ip,
+                    ':duration' => $cmonth,
+                    ':bytes_in' => $stats['bytes_in'],
+                    ':bytes_out'=> $stats['bytes_out'],
+                    ':stamp_inserted' => $ctime
+                ]);
+
+                //check result of query.
+                if (!$res2) {
+                    //write a message to syslog.
+                    syslog(LOG_NOTICE,"failed to insert SUMMARY 'month' data for $ip, dur: $cmonth ");
+                }
+            }
+        }
+
+        /*
+            * now we must make sure to update all the records from the last stat to have the current timestamp
+            * in the stamp_inserted field
+            *
+            */
+
+        $last_summary = $last_summary ?? date("Y-m-d h:i:s", $ctime); //ensure there's a value for last_summary.
+
+        //first run will be a wasted cycle since we'll just set summary to the same value current.
+        $sq4 = Database::getDB()->prepare("
+                UPDATE 
+                  main_summary
+                SET 
+                  stamp_inserted = FROM_UNIXTIME(:current_time)
+                WHERE
+                  duration_type = 'month' AND
+                  stamp_inserted = :last_summary_time     
+            ");
+
+        $res4 = $sq4->execute([':current_time' => $ctime, ':last_summary_time' => $last_summary]);
+
+        if($res4 === false) {
+            //query failed.
+            var_dump("failed to update cache timestamps");
+            syslog(LOG_NOTICE, "stats:: failed to update main_summary cache timestamps");
+        }
 
 		//perform additional categorisation
         $res = array('data'=> $data, 'totals'=>$totals);
