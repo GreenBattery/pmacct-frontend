@@ -12,11 +12,11 @@ $tomorrow = $this->date + 86400;
 <div id="summary_container container">
 <div class="row">
     <div class="pull-left"><a class="btn btn-primary" href="day.php?date=<?=$yest?>">Previous Day</a></div>
-    <div class="pull-right"><a class="btn btn-primary" href="day.php?date=<?=$tomorrow?>">Following Day</a></div>
+    <div class="pull-right"><a class="btn btn-primary pull-right" href="day.php?date=<?=$tomorrow?>">Following Day</a></div>
 
 </div>
     <div class="row">
-
+    <div class="col-lg-8 center-block" style="float: none;">
 
     <table id="day-summary" class="datatable">
         <thead>
@@ -59,8 +59,9 @@ $tomorrow = $this->date + 86400;
         </tbody>
     </table>
 
-    <div id="pie"></div>
+    </div>
 </div>
+
 </div>
 <script>
     $(function() {

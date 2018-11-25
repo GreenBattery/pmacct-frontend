@@ -28,6 +28,11 @@ table
 	border: 1px solid #AAA;
 }
 
+.dataTables_Wrapper {
+	margin: 0px auto;
+	width: 90%;
+}
+
 thead, tfoot
 {
 	background: #AAA;

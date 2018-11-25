@@ -30,12 +30,12 @@ if ($nm < $cm) {
         <a class="btn btn-primary" href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
     </div>
     <div class="col-sm-5 pull-right">
-        <a class="btn btn-primary" href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
+        <a class="btn btn-primary pull-right" href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-lg-8" >
+    <div class="col-lg-8 center-block" style="float: none;">
         <table id="month-summary" class="datatable">
             <thead>
             <tr>
@@ -76,11 +76,8 @@ if ($nm < $cm) {
         </table>
     </div>
 
-    <div class="col-lg-4" id="byday">
-
-    </div>
-
 </div>
+
 
 <script>
     $(function() {
