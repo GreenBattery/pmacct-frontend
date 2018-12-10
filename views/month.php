@@ -2,32 +2,27 @@
 date_default_timezone_set(Config::$tz);
 $this->page_id = 'summary-month';
 
-$cm = date("m", $this->date); //current month.
+//current date to display
+$cd = date_create_immutable("@$this->date");
 
-$lm = ((int) date("m", $this->date) -1 ) % 12; //get prev month.
+//previous month date object.
+$prevD = $cd->sub(new DateInterval("P1M"));
 
-$yy = date("Y", $this->date); //this year.
+$lm = $prevD->format("m"); //prev month.
+$py = $prevD->format("Y"); //year for prev month
 
-if ($lm > $cm) { // last month is greater than this month if we went into last year.
-    $yy--;
-}
+//next month date object.
+$nextD = $cd->add(new DateInterval("P1M"));
+$nm = $nextD->format("m"); //next month
+$ny = $nextD->format("Y"); //year for next month
 
 
-
-
-$ny = date("Y", $this->date); //next year.
-$nm = ((int) date("m", $this->date) + 1) % 12; //get next month.
-
-//if the next month obtained is less than curent month, it means it's the next year, so increment year.
-if ($nm < $cm) {
-    $ny++;
-}
 
 ?>
 <h1>Statistics for <?php echo date('F Y', $this->date); ?></h1>
-<div class="row">
+<div class="row panel">
     <div class="col-sm-5 pull-left">
-        <a class="btn btn-primary" href="<?= "month.php?month=$lm&year=$yy" ?>">Previous Month</a>
+        <a class="btn btn-primary" href="<?= "month.php?month=$lm&year=$py" ?>">Previous Month</a>
     </div>
     <div class="col-sm-5 pull-right">
         <a class="btn btn-primary pull-right" href="<?= "month.php?month=$nm&year=$ny" ?>">Next Month</a>
@@ -49,9 +44,9 @@ if ($nm < $cm) {
             <tfoot>
             <tr>
                 <th colspan="2">Totals</th>
-                <td><?php echo $this->data['totals']['in']; ?></td>
-                <td><?php echo $this->data['totals']['out']; ?></td>
-                <td><?php echo $this->data['totals']['in'] + $this->data['totals']['out'] ; ?></td>
+                <td><?php echo ($this->data['totals']['in'] ?? 0) ; ?></td>
+                <td><?php echo ($this->data['totals']['out'] ?? 0); ?></td>
+                <td><?php echo ($this->data['totals']['in'] ?? 0) + ($this->data['totals']['out'] ?? 0 ); ?></td>
             </tr>
             </tfoot>
             <tbody>
