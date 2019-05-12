@@ -12,7 +12,18 @@ $month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
 
 $start_date = mktime(0, 0, 0, $month, 1, $year);
 
-$data = Data_Summary::month($start_date);
+$curr_date = mktime();
+
+$data = array(
+    'totals' => array (),
+    'data' => array()
+);
+
+if ($start_date <= $curr_date) {
+    $data = Data_Summary::month($start_date);
+}
+
+
 
 //var_dump("dates|: " . $start_date . "__++++___:" );
 
