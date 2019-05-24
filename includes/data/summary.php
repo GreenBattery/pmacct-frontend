@@ -470,7 +470,7 @@ class Data_Summary
      *
      * keep in mind that the hostname is not guaranteed to exist in dhcp. it is an * if no hostname.
 	 */
-	private static function read_leases() {
+	public static function read_leases() {
         $fn = '/var/lib/misc/dnsmasq.leases';
         $fh = fopen($fn, 'r');
         $contents = fread($fh, filesize($fn));

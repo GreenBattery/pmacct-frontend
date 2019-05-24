@@ -1,66 +1,63 @@
+var tabXhr = null;
+
 $(function() {
-    var opts = {
-        order: [[3, "desc"]],
-        columns: [
-            {data: 'Hostname'},
-            {
-                data: 'in',
-                render: function(data, type, row) {
-                    if (type === "display") {
-                        return formatBytes(data);
-                    }else {
-                        return data;
-                    }
-
-                }
-            },
-            {
-                data: 'out',
-                render: function(data, type, row) {
-                    if (type === "display") {
-                        return formatBytes(data);
-                    }else {
-                        return data;
-                    }
-
-                }
-            },
-            {
-                data: 'total',
-                render: function(data, type, row) {
-                    if (type === "display") {
-                        return formatBytes(data);
-                    }else {
-                        return data;
-                    }
-
-                }
-            }
-        ],
-        'footerCallback': function(row, data, start, end, display) {
-            var api = this.api();
-            var inTotal = api.column(1).footer().innerText;
-
-            if ($.isNumeric(inTotal)) {
-                $(api.column(1).footer()).html(formatBytes(inTotal));
-            }
 
 
-            var outTotal = api.column(2).footer().innerText;
-            if ($.isNumeric(outTotal)) {
-                $(api.column(2).footer()).html(formatBytes(outTotal));
-            }
+    //updateActiveTab();
+    //tab handling
+    updateActiveTab()
 
 
-            var sumTotal = api.column(3).footer().innerText;
-            if ($.isNumeric(sumTotal)) {
-                $(api.column(3).footer()).html(formatBytes(sumTotal));
-            }
 
-        }
-    };
-    $('#daySummary').DataTable(opts);
+
+    $('.nav-tabs a').on('show.bs.tab', function(evt) {
+        let href = evt.target.href;
+        console.log('show event triggered: ' + href);
+        href = href.split('#')[1]; //we oonly want the part after the #
+        location.hash = href;
+        updateActiveTab();
+    });
+
 });
+
+function updateActiveTab() {
+    let hash = location.hash;
+    let action = 'day';
+    if (hash.length !== 0) {
+        console.log(hash);
+        hash = hash.split('#')[1];
+        action = hash;
+    }else {
+        console.log('handling first tab');
+        let t = $('.nav-tabs a:first');
+        let href= $(t).attr('href');
+        href = href.split('#')[1]; //only want the part after #.
+        action = href;
+    }
+
+    location.hash = action;
+
+
+    console.log('retrieving content for: ' + action);
+    if (tabXhr !== null) {
+        tabXhr.abort(); //cancel any currently ongoing requests.
+    }
+    let data = {action: action}
+    tabXhr = $.ajax({
+        url: '/stats.php',
+        method: 'GET',
+        data: data,
+        success: function(data, status, xhr) {
+            let handle = '#' + action;
+            $(handle).fadeOut(300);
+            $(handle).html(data); //update tab contents.
+            $(handle).fadeIn(3000);
+        },
+        complete: function(u, o){
+            tabXhr = null;
+        }
+    });
+}
 
 // based on github gist: https://gist.github.com/trevershick/737205b0ba79d8877a43
 function formatBytes(bytes) {
