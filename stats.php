@@ -1,6 +1,11 @@
 <?php
+date_default_timezone_set("utc");
 require __DIR__ . '/vendor/autoload.php';
+
+use nucc1\Hostnames;
 use \RedBeanPHP\R as R;
+
+$hostnames = nucc1\Hostnames::read_leases();
 
 R::setup( 'mysql:host=localhost;dbname=bandwidth',
     'router', 'router' ); //for both mysql or mariaDB
@@ -35,7 +40,8 @@ function index() {
  * stats for specified day
  */
 function getDay() {
-    global $s, $table_in, $table_out;
+    global $s, $table_in, $table_out, $hostnames;
+    $s->caching = 0;
 
     $date = !empty($_GET['date']) ? (int) $_GET['date'] : strtotime("today");
     $end_date = mktime(23, 59, 59, date('m', $date),
@@ -71,7 +77,6 @@ function getDay() {
     $b_t = [];
     $totals['bytes_out'] = 0;
     $totals['bytes_in'] = 0;
-    $hostnames = nucc1\Hostnames::read_leases();
 
     foreach($b_out as $stat) {
         $ip = $stat['ip'];
@@ -100,9 +105,10 @@ function getDay() {
     $totals['total'] = $totals['bytes_in'] + $totals['bytes_out'];
 
 
-
+    $do = new DateTime("@$date");
     $data = ['stats' => $b_t, 'totals' => $totals];
     $s->assign('data',$data);
+    $s->assign('date', $do->format('Y-m-d'));
     $s->display('stats.day.tpl');
 }
 
@@ -110,6 +116,273 @@ function getDay() {
  * get month stats
  */
 function getMonth() {
-    echo "<p>Month stats!</p>";
+    global $s, $hostnames;
+    // Querystring parameters
+    $year = !empty($_GET['year']) ? (int) $_GET['year'] : date('Y');
+    $month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
+
+    $start_date = mktime(0, 0, 0, $month, 1, $year);
+
+    //we want the date information needed for creating prev and next links:
+    //current date to display
+    $cd = date_create_immutable("@$start_date");
+
+//previous month date object.
+    $prevD = $cd->sub(new DateInterval("P1M"));
+
+    $lm = $prevD->format("m"); //prev month.
+    $py = $prevD->format("Y"); //year for prev month
+
+//next month date object.
+    $nextD = $cd->add(new DateInterval("P1M"));
+    $nm = $nextD->format("m"); //next month
+    $ny = $nextD->format("Y"); //year for next month
+
+    $last_day = date('t', $start_date); //get the last day of this month from timestamp.
+
+    $ctime = mktime(); //current timesamp for use in main_summary.
+    $cmonth = date("mY", $start_date); //get the MMYYYY to use as the duration key in main_summary table.
+
+    //get the epoch in localtime?
+    $end_date = mktime(23, 59, 59, date('n', $start_date), $last_day);
+    $sql = "
+          SELECT 
+            * 
+          FROM 
+            main_summary 
+          WHERE 
+            duration_type = 'month' and 
+            duration = :duration
+          ";
+    $prev_stats = R::getAll($sql, [':duration' => $cmonth]);
+
+    //if summary is not empty, then we have some pre-computed data and need only calculate from this time
+    if (count($prev_stats) > 0) {
+        $last_summary = $prev_stats[0]['stamp_inserted']; //this reflects last time stats were cached.
+
+        //calculate stats only from this date onwards.
+        $start_date = strtotime($last_summary);
+    }
+
+    //if the summary date is later than last day of the month, we don't need any computation.
+    if ($start_date >= $end_date) {
+        $start_date = $end_date; //make them equal and query should produce no data.
+    }
+
+    //make the table name in _mmYY format. for inbound table
+    $table_in = "inbound_" . $cmonth;
+    $table_out = "outbound_" . $cmonth;
+
+    //now retrieve raw data for further calculations.
+    $sql ="
+        SELECT ip_src AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_out, ip_proto AS protocol, dst_port
+        FROM $table_out
+        WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+        ORDER BY stamp_inserted, ip_src
+	";
+
+    $b_out = R::getAll($sql, [
+        ':end_date' => $end_date,
+        ':start_date' => $start_date
+    ]);
+
+    //initialise the totals array.
+    $totals = array(
+        'bytes_in'=>0,
+        'bytes_out'=>0
+    );
+
+    $data = []; // prepare results array.
+    //prefill the data and totals arrays with previously cached stats.
+    foreach ($prev_stats as $pstat) {
+        $ip = $pstat['ip'];
+        $data[$ip]['bytes_in'] = $pstat['bytes_in'];
+        $data[$ip]['bytes_out'] = $pstat['bytes_out'];
+        $data[$ip]['total'] = $pstat['bytes_in'] + $pstat['bytes_out'];
+        $data[$ip]['hostname'] = $hostnames[$ip] ?? $ip; //set the hostname if available.
+
+        $totals['bytes_in'] += $pstat['bytes_in'];
+        $totals['bytes_out'] += $pstat['bytes_out'];
+    }
+
+    $month_data = [];//we'll compute the data for main_summary table here too.
+
+   foreach ($b_out as $row)
+    {
+        //collapse uninteresting protocols to 'other'
+        if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+            $row['protocol'] = 'other';
+        }
+
+        if (!array_key_exists( $row['ip'], $data)) {
+
+            //initialise all fields for this IP
+            $data[$row['ip']] = array(
+                'bytes_in' => 0,
+                'bytes_out' => 0,
+                'total' =>0
+            );
+
+        }
+
+        if (!array_key_exists($row['ip'], $month_data)) { //init month data too if necessary.
+            $month_data[$row['ip']] = [
+                'duration_type' => 'month',
+                'duration' => $cmonth,
+                'bytes_in' => 0,
+                'bytes_out' => 0,
+                'stamp_inserted' => $ctime
+            ];
+        }
+
+
+        //populate the values accordingly.
+        $data[$row['ip']]['bytes_out'] += $row['bytes_out'];
+        $data[$row['ip']]['total'] += $row['bytes_out'];
+
+        //update month data too
+        $month_data[$row['ip']]['bytes_out'] += $row['bytes_out'];
+
+        $totals['bytes_out'] += $row['bytes_out'];
+
+    }
+
+    //get inbound stats from raw tables
+    $sql = "
+        SELECT ip_dst AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_in, ip_proto AS protocol, src_port
+        FROM $table_in
+        WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
+        ORDER BY stamp_inserted, ip_dst
+     ";
+
+   $b_in = R::getAll($sql, [
+       ':start_date' => $start_date,
+       ':end_date' => $end_date
+   ]);
+
+    //process inbound stats.
+   foreach($b_in as $row)
+    {
+        //collapse uninteresting protocols to 'other'
+        if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+            $row['protocol'] = 'other';
+        }
+        //var_dump($row);
+        if (!array_key_exists( $row['ip'], $data)) {
+            //initialise all fields for this IP
+            $data[$row['ip']] = array(
+                'bytes_in' => 0,
+                'bytes_out' => 0,
+                'total' =>0
+            );
+
+        }
+
+        if (!array_key_exists($row['ip'], $month_data)) { //init month data too if necessary.
+            $month_data[$row['ip']] = [
+                'duration_type' => 'month',
+                'duration' => $cmonth,
+                'bytes_in' => 0,
+                'bytes_out' => 0,
+                'stamp_inserted' => $ctime
+            ];
+        }
+
+        $data[$row['ip']]['bytes_in'] += $row['bytes_in'];
+        $data[$row['ip']]['total'] += $row['bytes_in'];
+
+        $month_data[$row['ip']]['bytes_in'] += $row['bytes_in'];
+
+        $totals['bytes_in'] += $row['bytes_in'];
+
+    }
+
+   $totals['total'] = $totals['bytes_in'] + $totals['bytes_out'];
+
+    //stuff this data into the main_summary table to speed up future lookups for month stats.
+
+    foreach($month_data as $ip=>$stats) {
+        //if this stat exists in the table, then we need to update by adding to current data. else, insert.
+        $sq1 = "
+                select * 
+                from 
+                  main_summary 
+                where 
+                  ip=:ip_addr and 
+                  duration_type= 'month' and 
+                  duration = :duration
+        ";
+
+        $res = R::getRow($sq1,[
+            ":ip_addr" => $ip,
+            ':duration' => $cmonth
+        ]);
+
+        //the query above should yield only one result.
+        if (count($res) > 0 ) { //value exists, update it.
+            $bytes_in = $res['bytes_in'] + $stats['bytes_in'];
+            $bytes_out = $res['bytes_out'] + $stats['bytes_out'];
+
+            $sq3 = "
+                    UPDATE main_summary
+                    set
+                      bytes_in = :bytes_in,
+                      bytes_out = :bytes_out,
+                      stamp_inserted = FROM_UNIXTIME(:stamp_inserted)
+                    WHERE 
+                      id = :id
+                ";
+
+            $res3 = R::exec($sq3, [
+                ':bytes_in' => $bytes_in,
+                ':bytes_out' => $bytes_out,
+                'stamp_inserted' => $ctime,
+                ':id' => $res['id']
+            ]);
+
+            //check result of query.
+            if (!$res3) {
+                //write a message to syslog.
+                syslog(LOG_NOTICE,"failed to UPDATE SUMMARY 'month' data for $ip, dur: $cmonth ");
+            }
+
+
+
+        } else {
+            //insert value.
+            $sq2 = "
+                    INSERT into main_summary 
+                    values (
+                      null,
+                      :ip_addr,
+                      'month',
+                      :duration,
+                      :bytes_in,
+                      :bytes_out,
+                      FROM_UNIXTIME(:stamp_inserted)
+                    )
+                ";
+
+            $res2 = R::exec($sq2, [
+                ':ip_addr'=> $ip,
+                ':duration' => $cmonth,
+                ':bytes_in' => $stats['bytes_in'],
+                ':bytes_out'=> $stats['bytes_out'],
+                ':stamp_inserted' => $ctime
+            ]);
+
+            //check result of query.
+            if (!$res2) {
+                //write a message to syslog.
+                syslog(LOG_NOTICE,"failed to insert SUMMARY 'month' data for $ip, dur: $cmonth ");
+            }
+        }
+    }
+
+
+    $s->assign('data', ['stats' =>$data, 'totals' => $totals]);
+    $s->assign('date', $cd->format("F Y"));
+    $s->assign('links', ['lm'=>$lm, 'py' => $py, 'nm' => $nm, 'ny'=> $ny]);
+    $s->display('stats.month.tpl');
 
 }

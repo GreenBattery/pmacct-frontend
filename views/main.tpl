@@ -18,7 +18,7 @@
 
     </head>
 
-    <body>
+    <body class="h-100">
         <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-light border-bottom box-shadow">
             <nav class="navbar navbar-expand-sm fixed-top bg-dark navbar-dark">
                 <ul class="navbar-nav">
@@ -27,7 +27,7 @@
                 </ul>
             </nav>
         </div>
-        <div class="container mt-4">
+        <div class="container mt-4 h-100">
             {block name=body}{/block}
         </div>
 

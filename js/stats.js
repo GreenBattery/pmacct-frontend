@@ -1,41 +1,38 @@
 var tabXhr = null;
 
 $(function() {
-
-
-    //updateActiveTab();
     //tab handling
+    let hash = location.hash;
+    if (hash.length !== 0) {
+        console.log(hash);
+        action = hash.split('#')[1];
+        window.location.hash = action;
+        console.log('showing tab: ' + action);
+        $('.nav-tabs a[href="#' + action + '"]').tab('show');
+    }else {
+        console.log('handling first tab');
+        window.location.hash= 'day'
+        $('#dayTab').tab('show');
+    }
+
+
     updateActiveTab()
 
 
-
-
     $('.nav-tabs a').on('show.bs.tab', function(evt) {
-        let href = evt.target.href;
-        console.log('show event triggered: ' + href);
-        href = href.split('#')[1]; //we oonly want the part after the #
-        location.hash = href;
+        window.location.hash = evt.target.hash;
         updateActiveTab();
     });
 
 });
 
 function updateActiveTab() {
-    let hash = location.hash;
-    let action = 'day';
-    if (hash.length !== 0) {
-        console.log(hash);
-        hash = hash.split('#')[1];
-        action = hash;
-    }else {
-        console.log('handling first tab');
-        let t = $('.nav-tabs a:first');
-        let href= $(t).attr('href');
-        href = href.split('#')[1]; //only want the part after #.
-        action = href;
-    }
 
-    location.hash = action;
+
+    let action = window.location.hash.split('#')[1];
+    $('#' + action).html('<div class="container d-flex h-100 align-items-center justify-content-center">' +
+        '<div class="row flex-row h-100" >' +
+        '<div class="col-2 flex-column h-100"><span class="spinner-border text-info "></span></div></div></div>');
 
 
     console.log('retrieving content for: ' + action);
@@ -49,7 +46,7 @@ function updateActiveTab() {
         data: data,
         success: function(data, status, xhr) {
             let handle = '#' + action;
-            $(handle).fadeOut(300);
+            $(handle).hide();
             $(handle).html(data); //update tab contents.
             $(handle).fadeIn(3000);
         },

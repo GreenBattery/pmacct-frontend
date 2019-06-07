@@ -65,10 +65,15 @@ $(document).ready(function() {
 
         }
     };
-    $('#daySummary').DataTable(opts);
+    $('#monthSummary').DataTable(opts);
 
-    $('#daySummary').on('init.dt', function() {
-        console.log('making tooltips');
+    $('#monthSummary').on('init.dt', function() {
 
     });
+
+    $('.monthNav').click(function(evt) {
+        //console.log(evt);
+        let me = evt.target;
+        console.log($(me).attr('data-month'));
+    })
 })

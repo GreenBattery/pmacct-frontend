@@ -1,5 +1,16 @@
-<h3 class="mt-4">{$date}</h3>
-<table id="daySummary" class="table table-striped">
+
+<div class="row">
+    <div class="col-8"><h3 class="mt-4">{$date}</h3></div>
+    <div class="col-4">
+        <div class="btn-group btn-group-sm w-100">
+            <button data-month="{$links.lm}" class="btn btn-outline-primary monthNav" role='button'
+                data-year="{$links.py}">Prev Month</button>
+            <button data-month="{$links.nm}" class="btn btn-outline-primary monthNav" role="button"
+                data-year="{$links.ny}">Next Month</button>
+        </div>
+    </div>
+</div>
+<table id="monthSummary" class="table table-striped">
     <thead>
     <tr>
         <th>Hostname</th>
@@ -28,5 +39,4 @@
     </tfoot>
 </table>
 
-<script src='/js/stats.day.js'></script>
-
+<script src='/js/stats.month.js'></script>
