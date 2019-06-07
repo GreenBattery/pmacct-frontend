@@ -1,9 +1,5 @@
 $(document).ready(function() {
-    //tooltips
-    console.log('make tooltips');
-    //$('[data-toggle="tooltip"]').tooltip();
-    $("body").tooltip({ selector: '[data-toggle=tooltip]' });
-
+    console.log('day Ready');
     //table setup.
     var opts = {
         order: [[3, "desc"]],
@@ -62,13 +58,14 @@ $(document).ready(function() {
             if ($.isNumeric(sumTotal)) {
                 $(api.column(3).footer()).html(formatBytes(sumTotal));
             }
-
         }
     };
     $('#daySummary').DataTable(opts);
 
-    $('#daySummary').on('init.dt', function() {
-        console.log('making tooltips');
-
-    });
+    $('.dayNav').click(function(evt) {
+        //console.log(evt);
+        let me = evt.target;
+        let d = $(me).attr('data-date');
+        updateActiveTab({date: d});
+    })
 })

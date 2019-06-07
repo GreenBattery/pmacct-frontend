@@ -1,6 +1,6 @@
 $(document).ready(function() {
     //tooltips
-    console.log('make tooltips');
+    console.log('month ready');
     //$('[data-toggle="tooltip"]').tooltip();
     $("body").tooltip({ selector: '[data-toggle=tooltip]' });
 
@@ -74,6 +74,8 @@ $(document).ready(function() {
     $('.monthNav').click(function(evt) {
         //console.log(evt);
         let me = evt.target;
-        console.log($(me).attr('data-month'));
+        let mth = $(me).attr('data-month');
+        let yr = $(me).attr('data-year');
+        updateActiveTab({month: mth, year: yr});
     })
 })

@@ -26,7 +26,7 @@ $(function() {
 
 });
 
-function updateActiveTab() {
+function updateActiveTab(args=null) {
 
 
     let action = window.location.hash.split('#')[1];
@@ -40,6 +40,14 @@ function updateActiveTab() {
         tabXhr.abort(); //cancel any currently ongoing requests.
     }
     let data = {action: action}
+    //if any args supplied, add them to data to send.
+    if (args != null) {
+        for (var k in args) {
+            if (args.hasOwnProperty(k)){
+                data[k] = args[k];
+            }
+        }
+    }
     tabXhr = $.ajax({
         url: '/stats.php',
         method: 'GET',

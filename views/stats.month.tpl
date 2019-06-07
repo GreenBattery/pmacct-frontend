@@ -10,6 +10,7 @@
         </div>
     </div>
 </div>
+<div id="monthcontainer">
 <table id="monthSummary" class="table table-striped">
     <thead>
     <tr>
@@ -38,5 +39,13 @@
     </tr>
     </tfoot>
 </table>
+</div>
+<script id="monthScript">
+    $(function() {ldelim}
+        var script=document.createElement('script');
+        script.src="/js/stats.month.js";
 
-<script src='/js/stats.month.js'></script>
+        $("#monthScript").before(script);
+    {rdelim})
+
+</script>

@@ -44,6 +44,12 @@ function getDay() {
     $s->caching = 0;
 
     $date = !empty($_GET['date']) ? (int) $_GET['date'] : strtotime("today");
+
+    $cd = date_create_immutable("@$date");
+    $d1 = new DateInterval("P1D");
+    $yest = $cd->sub($d1)->getTimestamp(); //yesterday.
+    $tomm = $cd->add($d1)->getTimestamp(); //tomorrow
+
     $end_date = mktime(23, 59, 59, date('m', $date),
         date('d', $date), date('Y', $date));
 
@@ -109,6 +115,7 @@ function getDay() {
     $data = ['stats' => $b_t, 'totals' => $totals];
     $s->assign('data',$data);
     $s->assign('date', $do->format('Y-m-d'));
+    $s->assign('links', ['prev' => $yest, 'next'=> $tomm]);
     $s->display('stats.day.tpl');
 }
 
