@@ -120,6 +120,9 @@ function getDay() {
 }
 
 /*
+ * TODO: month stats stamp_inserted should always be midnight of the day calculated, and should
+ * only be updated once per day, so as to not miss short-lived IP addresses in the monthly summary.
+ *
  * get month stats
  */
 function getMonth() {
@@ -164,7 +167,7 @@ function getMonth() {
     $prev_stats = R::getAll($sql, [':duration' => $cmonth]);
 
     //if summary is not empty, then we have some pre-computed data and need only calculate from this time
-    if (count($prev_stats) > 0) {
+    if (is_array($prev_stats) && count($prev_stats) > 0) {
         $last_summary = $prev_stats[0]['stamp_inserted']; //this reflects last time stats were cached.
 
         //calculate stats only from this date onwards.
@@ -216,15 +219,17 @@ function getMonth() {
 
    foreach ($b_out as $row)
     {
+        $ip = $row['ip'];
+
         //collapse uninteresting protocols to 'other'
         if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
             $row['protocol'] = 'other';
         }
 
-        if (!array_key_exists( $row['ip'], $data)) {
+        if (!array_key_exists( $ip, $data)) {
 
             //initialise all fields for this IP
-            $data[$row['ip']] = array(
+            $data[$ip] = array(
                 'bytes_in' => 0,
                 'bytes_out' => 0,
                 'total' =>0
@@ -232,23 +237,24 @@ function getMonth() {
 
         }
 
-        if (!array_key_exists($row['ip'], $month_data)) { //init month data too if necessary.
-            $month_data[$row['ip']] = [
+        if (!array_key_exists($ip, $month_data)) { //init month data too if necessary.
+            $month_data[$ip] = [
                 'duration_type' => 'month',
                 'duration' => $cmonth,
                 'bytes_in' => 0,
-                'bytes_out' => 0,
+                'bytes_out' => $row['bytes_out'],
                 'stamp_inserted' => $ctime
             ];
+        } else { //update it
+            $month_data[$ip]['bytes_out'] += $row['bytes_out'];
         }
 
 
         //populate the values accordingly.
-        $data[$row['ip']]['bytes_out'] += $row['bytes_out'];
-        $data[$row['ip']]['total'] += $row['bytes_out'];
+        $data[$ip]['bytes_out'] += $row['bytes_out'];
+        $data[$ip]['total'] += $row['bytes_out'];
 
-        //update month data too
-        $month_data[$row['ip']]['bytes_out'] += $row['bytes_out'];
+
 
         $totals['bytes_out'] += $row['bytes_out'];
 
@@ -270,14 +276,15 @@ function getMonth() {
     //process inbound stats.
    foreach($b_in as $row)
     {
+        $ip = $row['ip'];
         //collapse uninteresting protocols to 'other'
-        if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
+        if (!in_array($row['protocol'], ['tcp', 'udp', 'icmp'])  ){
             $row['protocol'] = 'other';
         }
         //var_dump($row);
-        if (!array_key_exists( $row['ip'], $data)) {
+        if (!array_key_exists( $ip, $data)) {
             //initialise all fields for this IP
-            $data[$row['ip']] = array(
+            $data[$ip] = array(
                 'bytes_in' => 0,
                 'bytes_out' => 0,
                 'total' =>0
@@ -285,20 +292,21 @@ function getMonth() {
 
         }
 
-        if (!array_key_exists($row['ip'], $month_data)) { //init month data too if necessary.
-            $month_data[$row['ip']] = [
+        if (!array_key_exists($ip, $month_data)) { //init month data too if necessary.
+            $month_data[$ip] = [
                 'duration_type' => 'month',
                 'duration' => $cmonth,
-                'bytes_in' => 0,
+                'bytes_in' => $row['bytes_in'],
                 'bytes_out' => 0,
                 'stamp_inserted' => $ctime
             ];
+        }else {
+            $month_data[$ip]['bytes_in'] += $row['bytes_in'];
         }
 
-        $data[$row['ip']]['bytes_in'] += $row['bytes_in'];
-        $data[$row['ip']]['total'] += $row['bytes_in'];
+        $data[$ip]['bytes_in'] += $row['bytes_in'];
+        $data[$ip]['total'] += $row['bytes_in'];
 
-        $month_data[$row['ip']]['bytes_in'] += $row['bytes_in'];
 
         $totals['bytes_in'] += $row['bytes_in'];
 
@@ -325,8 +333,9 @@ function getMonth() {
             ':duration' => $cmonth
         ]);
 
+
         //the query above should yield only one result.
-        if (count($res) > 0 ) { //value exists, update it.
+        if (is_array($res) && count($res) > 0 ) { //value exists, update it.
             $bytes_in = $res['bytes_in'] + $stats['bytes_in'];
             $bytes_out = $res['bytes_out'] + $stats['bytes_out'];
 
