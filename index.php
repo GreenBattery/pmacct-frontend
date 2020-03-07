@@ -34,7 +34,7 @@ function index() {
         //we want ethernet and ones that actually do something.
         if ($device['link_type'] === "ether" && $device['qdisc'] !== "noop") {
             if ($device['operstate'] === "UP") { //set a marker to highlight this in bootstrap using backgrounds.
-                $device['marker'] = "bg"
+                $device['marker'] = "bg";
             }
             $d[] = $device;
         }
@@ -44,24 +44,3 @@ function index() {
     $S->display('index.tpl');
 
 }
-
-
-/*require __DIR__ . '/includes/core.php';
-
-
-$tz = date_default_timezone_get(); //get timezone.
-
-//unix time for midnight today
-
-$sd = strtotime("today");
-//var_dump($sd);
-$data = Data_Summary::day($sd);
-
-
-
-View::factory('day')
-    ->set('date', $sd)
-    ->set('data', $data)
-    ->render();
-
-*/
