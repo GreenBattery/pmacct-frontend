@@ -22,7 +22,7 @@
                 <h5>Other Data</h5>
                 <ul class="list-group" aria-label="Interface Details">
                     <li class="list-group-item"><strong>Type:</strong> Ethernet</li>
-                    <li class="list-group-item"><strong>Addr:</strong> {$d.address}</li>
+                    <li class="list-group-item"><strong>MAC:</strong> {$d.address}</li>
                     <li class="list-group-item"><strong>Q Discipline:</strong> {$d.qdisc}</li>
                 </ul>
 

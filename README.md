@@ -18,6 +18,12 @@ The application can then be deployed in its entirety in the *WEB ROOT* of your w
  directly. Example, if deployed in a folder called "stats" then you should be able to access it under /stats/
  at your hostname (using a web browser).
 
+#summary cache
+A cron job needs to be configured twice per hour to calculate the monthly stats like so:
+`30,59 * * * * /var/www/html/batch/stats.month.calc.php --current`
+
+The run at the 59th minute is important to make sure that the most recent stats are calculated before a new month.
+
 ## Requirements
 * Php 7.2
 * Apache 2.4

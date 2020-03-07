@@ -33,6 +33,9 @@ function index() {
     foreach($devices as $device) {
         //we want ethernet and ones that actually do something.
         if ($device['link_type'] === "ether" && $device['qdisc'] !== "noop") {
+            if ($device['operstate'] === "UP") { //set a marker to highlight this in bootstrap using backgrounds.
+                $device['marker'] = "bg"
+            }
             $d[] = $device;
         }
     }

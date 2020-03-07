@@ -109,6 +109,10 @@ function getDay() {
     }
 
     $totals['total'] = $totals['bytes_in'] + $totals['bytes_out'];
+    $totals['bytes_out_formatted'] = formatBytes($totals['bytes_out']);
+    $totals['bytes_in_formatted'] = formatBytes($totals['bytes_in']);
+    $totals['aggregate_formatted'] = formatBytes(($totals['bytes_in'] + $totals['bytes_out']));
+
 
 
     $do = new DateTime("@$date");
@@ -166,36 +170,6 @@ function getMonth() {
           ";
     $prev_stats = R::getAll($sql, [':duration' => $cmonth]);
 
-    //if summary is not empty, then we have some pre-computed data and need only calculate from this time
-    if (is_array($prev_stats) && count($prev_stats) > 0) {
-        $last_summary = $prev_stats[0]['stamp_inserted']; //this reflects last time stats were cached.
-
-        //calculate stats only from this date onwards.
-        $start_date = strtotime($last_summary);
-    }
-
-    //if the summary date is later than last day of the month, we don't need any computation.
-    if ($start_date >= $end_date) {
-        $start_date = $end_date; //make them equal and query should produce no data.
-    }
-
-    //make the table name in _mmYY format. for inbound table
-    $table_in = "inbound_" . $cmonth;
-    $table_out = "outbound_" . $cmonth;
-
-    //now retrieve raw data for further calculations.
-    $sql ="
-        SELECT ip_src AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_out, ip_proto AS protocol, dst_port
-        FROM $table_out
-        WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-        ORDER BY stamp_inserted, ip_src
-	";
-
-    $b_out = R::getAll($sql, [
-        ':end_date' => $end_date,
-        ':start_date' => $start_date
-    ]);
-
     //initialise the totals array.
     $totals = array(
         'bytes_in'=>0,
@@ -217,183 +191,10 @@ function getMonth() {
 
     $month_data = [];//we'll compute the data for main_summary table here too.
 
-   foreach ($b_out as $row)
-    {
-        $ip = $row['ip'];
-
-        //collapse uninteresting protocols to 'other'
-        if (!in_array($row['protocol'], array('tcp', 'udp', 'icmp'))  ){
-            $row['protocol'] = 'other';
-        }
-
-        if (!array_key_exists( $ip, $data)) {
-
-            //initialise all fields for this IP
-            $data[$ip] = array(
-                'bytes_in' => 0,
-                'bytes_out' => 0,
-                'total' =>0
-            );
-
-        }
-
-        if (!array_key_exists($ip, $month_data)) { //init month data too if necessary.
-            $month_data[$ip] = [
-                'duration_type' => 'month',
-                'duration' => $cmonth,
-                'bytes_in' => 0,
-                'bytes_out' => $row['bytes_out'],
-                'stamp_inserted' => $ctime
-            ];
-        } else { //update it
-            $month_data[$ip]['bytes_out'] += $row['bytes_out'];
-        }
-
-
-        //populate the values accordingly.
-        $data[$ip]['bytes_out'] += $row['bytes_out'];
-        $data[$ip]['total'] += $row['bytes_out'];
-
-
-
-        $totals['bytes_out'] += $row['bytes_out'];
-
-    }
-
-    //get inbound stats from raw tables
-    $sql = "
-        SELECT ip_dst AS ip, UNIX_TIMESTAMP(stamp_inserted) AS hour, bytes AS bytes_in, ip_proto AS protocol, src_port
-        FROM $table_in
-        WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-        ORDER BY stamp_inserted, ip_dst
-     ";
-
-   $b_in = R::getAll($sql, [
-       ':start_date' => $start_date,
-       ':end_date' => $end_date
-   ]);
-
-    //process inbound stats.
-   foreach($b_in as $row)
-    {
-        $ip = $row['ip'];
-        //collapse uninteresting protocols to 'other'
-        if (!in_array($row['protocol'], ['tcp', 'udp', 'icmp'])  ){
-            $row['protocol'] = 'other';
-        }
-        //var_dump($row);
-        if (!array_key_exists( $ip, $data)) {
-            //initialise all fields for this IP
-            $data[$ip] = array(
-                'bytes_in' => 0,
-                'bytes_out' => 0,
-                'total' =>0
-            );
-
-        }
-
-        if (!array_key_exists($ip, $month_data)) { //init month data too if necessary.
-            $month_data[$ip] = [
-                'duration_type' => 'month',
-                'duration' => $cmonth,
-                'bytes_in' => $row['bytes_in'],
-                'bytes_out' => 0,
-                'stamp_inserted' => $ctime
-            ];
-        }else {
-            $month_data[$ip]['bytes_in'] += $row['bytes_in'];
-        }
-
-        $data[$ip]['bytes_in'] += $row['bytes_in'];
-        $data[$ip]['total'] += $row['bytes_in'];
-
-
-        $totals['bytes_in'] += $row['bytes_in'];
-
-    }
-
-   $totals['total'] = $totals['bytes_in'] + $totals['bytes_out'];
-
-    //stuff this data into the main_summary table to speed up future lookups for month stats.
-
-    foreach($month_data as $ip=>$stats) {
-        //if this stat exists in the table, then we need to update by adding to current data. else, insert.
-        $sq1 = "
-                select * 
-                from 
-                  main_summary 
-                where 
-                  ip=:ip_addr and 
-                  duration_type= 'month' and 
-                  duration = :duration
-        ";
-
-        $res = R::getRow($sq1,[
-            ":ip_addr" => $ip,
-            ':duration' => $cmonth
-        ]);
-
-
-        //the query above should yield only one result.
-        if (is_array($res) && count($res) > 0 ) { //value exists, update it.
-            $bytes_in = $res['bytes_in'] + $stats['bytes_in'];
-            $bytes_out = $res['bytes_out'] + $stats['bytes_out'];
-
-            $sq3 = "
-                    UPDATE main_summary
-                    set
-                      bytes_in = :bytes_in,
-                      bytes_out = :bytes_out,
-                      stamp_inserted = FROM_UNIXTIME(:stamp_inserted)
-                    WHERE 
-                      id = :id
-                ";
-
-            $res3 = R::exec($sq3, [
-                ':bytes_in' => $bytes_in,
-                ':bytes_out' => $bytes_out,
-                'stamp_inserted' => $ctime,
-                ':id' => $res['id']
-            ]);
-
-            //check result of query.
-            if (!$res3) {
-                //write a message to syslog.
-                syslog(LOG_NOTICE,"failed to UPDATE SUMMARY 'month' data for $ip, dur: $cmonth ");
-            }
-
-
-
-        } else {
-            //insert value.
-            $sq2 = "
-                    INSERT into main_summary 
-                    values (
-                      null,
-                      :ip_addr,
-                      'month',
-                      :duration,
-                      :bytes_in,
-                      :bytes_out,
-                      FROM_UNIXTIME(:stamp_inserted)
-                    )
-                ";
-
-            $res2 = R::exec($sq2, [
-                ':ip_addr'=> $ip,
-                ':duration' => $cmonth,
-                ':bytes_in' => $stats['bytes_in'],
-                ':bytes_out'=> $stats['bytes_out'],
-                ':stamp_inserted' => $ctime
-            ]);
-
-            //check result of query.
-            if (!$res2) {
-                //write a message to syslog.
-                syslog(LOG_NOTICE,"failed to insert SUMMARY 'month' data for $ip, dur: $cmonth ");
-            }
-        }
-    }
+    $totals['total'] = $totals['bytes_in'] + $totals['bytes_out'];
+    $totals['bytes_out_formatted'] = formatBytes($totals['bytes_out']);
+    $totals['bytes_in_formatted'] = formatBytes($totals['bytes_in']);
+    $totals['aggregate_formatted'] = formatBytes(($totals['bytes_in'] + $totals['bytes_out']));
 
 
     $s->assign('data', ['stats' =>$data, 'totals' => $totals]);
@@ -401,4 +202,21 @@ function getMonth() {
     $s->assign('links', ['lm'=>$lm, 'py' => $py, 'nm' => $nm, 'ny'=> $ny]);
     $s->display('stats.month.tpl');
 
+}
+
+/**
+ * @param $bytes
+ * @param int $precision
+ * @return string
+ */
+function formatBytes($bytes) {
+    $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
+
+    $bytes = max($bytes, 0);
+    $power = floor(($bytes ? log($bytes) : 0) / log(1024));
+    $power = min($power, count($units) - 1);
+
+    $bytes /= pow(1024, $power);
+
+    return round($bytes, 4) . ' ' . $units[$power];
 }
