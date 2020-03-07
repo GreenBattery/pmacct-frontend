@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 /**
  * User: nucc1
@@ -144,7 +145,7 @@ if ($month === null) {
         //check result of query.
         if (!$res2) {
             //write a message to syslog.
-            syslog(LOG_NOTICE,"failed to insert SUMMARY 'month' data for $ip, dur: $cmonth ");
+            syslog(LOG_NOTICE,"failed to insert SUMMARY 'month' data for $ip, dur: $duration ");
         }
     }
 
