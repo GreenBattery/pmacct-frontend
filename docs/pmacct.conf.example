@@ -47,7 +47,7 @@ aggregate_filter[out]: src net 192.168.1.0/24 and not dst net 192.168.1.0/24
 sql_host: localhost
 sql_user: router
 sql_passwd: router
-sql_table_schema: /home/nucc1/usage.schema
+sql_table_schema: /etc/pmacct/usage.schema
 
 !I use table version 2 because it gives me all the data I need.
 sql_table_version: 2
@@ -56,10 +56,10 @@ sql_table_version: 2
 
 ! now specify the db and table schema for the inbound/outbound stats
 sql_db[in]: bandwidth
-sql_table_schema[in]: /home/nucc1/inbound.schema
+sql_table_schema[in]: /etc/pmacct/inbound.schema
 
 sql_db[out]: bandwidth
-sql_table_schema[out]: /home/nucc1/outbound.schema
+sql_table_schema[out]: /etc/pmacct/outbound.schema
 
 sql_table[in]: inbound_%m%Y
 sql_table[out]: outbound_%m%Y
