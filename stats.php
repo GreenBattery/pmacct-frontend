@@ -105,6 +105,7 @@ function getDay() {
         if (!isset($b_t[$ip]['bytes_out'])) {
             $b_t[$ip]['bytes_out'] = 0; //ensure that this key exists.
         }
+        $b_t[$ip]['hostname'] = $hostnames[$stat['ip']] ?? $ip; //set the hostname if available.
         $totals['bytes_in'] += $stat['bytes_in'];
     }
 
