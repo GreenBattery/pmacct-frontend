@@ -5,7 +5,7 @@
 
 body
 {
-	padding-top: 50px;
+	padding-top: 100px;
 }
 
 a
@@ -83,4 +83,9 @@ tr:nth-child(even)
 #host_graph
 {
 	height: 250px;
+}
+
+.xdebug-var-dump {
+	margin-top: 120px !important;
+	padding-top: 120px !important;
 }
