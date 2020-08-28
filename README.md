@@ -14,13 +14,32 @@ The *includes/config.php* file is where you specify the database access informat
 If pmacct is configured as per above and database is similarly created, then each month, the statistics are collected
 into tables in the format inbound_MMYY and outbound_MMYY for inbound and outbound traffic.
 
-The application can then be deployed in its entirety in the *WEB ROOT* of your web server and can then be accessed
- directly. Example, if deployed in a folder called "stats" then you should be able to access it under /stats/
- at your hostname (using a web browser).
+You should then point your web server's Document Root to the `www`
+folder. The other files that make up the project aren't intended to be 
+visible from the web.
 
 # summary cache
 A cron job needs to be configured twice per hour to calculate the monthly stats like so:
 `30,59 * * * * /var/www/html/batch/stats.month.calc.php --current`
+
+# Firewall Interface Binary
+To interact with firewall rules, a binary needs to be created that has the necessary
+ permissions to extract firewall configuration details.
+
+This binary is located in the bin directory as `fw.c`. You can compile it into the required binary with:
+`gcc -o fw fw.c`
+
+You also need to make it owned by root, and it's group be your web server user
+with 755 permissions. For webserver group called www-data, you can use:
+
+`sudo chown root.www-data ./fw`
+
+`sudo chmod 755 ./fw`
+
+Now we need to grant it setuid root capabilities, otherwise, apache cannot execute it with the right privileges.
+
+`sudo chown u+s ./fw`
+
 
 You can typically setup a crontab by executing
 `sudo crontab -e`

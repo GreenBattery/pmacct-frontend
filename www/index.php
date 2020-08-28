@@ -1,12 +1,12 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
+require '../vendor/autoload.php';
 
 $S = new Smarty();
 $S->setTemplateDir($_SERVER['DOCUMENT_ROOT'] . '/views/');
 
-$S->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/cache/');
-$S->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/configs/');
-$S->setCacheDir($_SERVER['DOCUMENT_ROOT'] .'/cache/');
+$S->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/../template-cache/');
+$S->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/../template-config/');
+$S->setCacheDir($_SERVER['DOCUMENT_ROOT'] .'/../template-cache/');
 
 $endpoints = [
     'default'=> 'index',
@@ -14,7 +14,7 @@ $endpoints = [
     'month' => 'getMonth'
 ];
 
-$action = urldecode($_REQUEST['action']?? "default");
+$action = urldecode($_REQUEST['action'] ?? "default");
 
 if (strlen(trim($action)) === 0) {
     $action = "default";

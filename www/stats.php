@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set("utc");
-require __DIR__ . '/vendor/autoload.php';
+require '../vendor/autoload.php';
 
 use nucc1\Hostnames;
 use \RedBeanPHP\R as R;
@@ -12,9 +12,9 @@ R::setup( 'mysql:host=localhost;dbname=bandwidth',
 $s = new Smarty();
 $s->setTemplateDir($_SERVER['DOCUMENT_ROOT'] . '/views/');
 
-$s->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/cache/');
-$s->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/configs/');
-$s->setCacheDir($_SERVER['DOCUMENT_ROOT'] .'/cache/');
+$s->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/../template-cache/');
+$s->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/../template-config/');
+$s->setCacheDir($_SERVER['DOCUMENT_ROOT'] .'/../template-cache/');
 
 $endpoints = [
     'default'=> 'index',

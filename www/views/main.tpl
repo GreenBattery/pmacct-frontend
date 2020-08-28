@@ -3,10 +3,10 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{block name=title}{/block}</title>
-        <link rel="stylesheet" href="/css/bootstrap.min.css">
-        <script src="/js/jquery.js"></script>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="js/jquery.js"></script>
         {block name=scriptFiles}{/block}
-        <script src="/js/bootstrap.js"></script>
+        <script src="js/bootstrap.js"></script>
         {block name=cssFiles}{/block}
 
         <style type="text/css">
@@ -19,8 +19,8 @@
             <nav class="navbar navbar-expand navbar-expand-lg navbar-expand-md bg-dark navbar-dark">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link " href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/stats.php">Stats</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/firewall.php">Firewall</a></li>
+                    <li class="nav-item"><a class="nav-link" href="stats.php">Stats</a></li>
+                    <li class="nav-item"><a class="nav-link" href="firewall.php">Firewall</a></li>
                 </ul>
             </nav>
         </div>

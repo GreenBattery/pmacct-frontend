@@ -19,12 +19,12 @@
 {block name="title"}Router Bandwidth Statistics{/block}
 
 {block name="cssFiles"}
-    <link rel="stylesheet" href="/css/datatables.min.css" />
-    <link rel="stylesheet" href="/lib/DataTables/datatables.css"
+    <link rel="stylesheet" href="css/datatables.min.css" />
+
 {/block}
 {block name="scriptFiles"}
-    <script src="/lib/DataTables/datatables.js" type="text/javascript"></script>
-    <script src="/js/stats.js" type="text/javascript"></script>
-    <script src="/js/popper.min.js" type="text/javascript"></script>
-    <script src="/js/tooltip.min.js" type="text/javascript"></script>
+    <script src="lib/DataTables/datatables.js" type="text/javascript"></script>
+    <script src="js/stats.js" type="text/javascript"></script>
+    <script src="js/popper.min.js" type="text/javascript"></script>
+    <script src="js/tooltip.min.js" type="text/javascript"></script>
 {/block}

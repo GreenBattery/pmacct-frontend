@@ -2,13 +2,12 @@
 {block name=title}Router - Firewall{/block}
 
 {block name=cssFiles}
-    <link rel="stylesheet" href="/css/datatables.min.css" />
-    <link rel="stylesheet" href="/lib/DataTables/datatables.css"
+    <link rel="stylesheet" href="css/datatables.min.css" />
 {/block}
 
 {block name=scriptFiles}
-    <script src="/lib/DataTables/datatables.js" type="text/javascript"></script>
-    <script src="/js/firewall.js" type="text/javascript"></script>
+    <script src="lib/DataTables/datatables.js" type="text/javascript"></script>
+    <script src="js/firewall.js" type="text/javascript"></script>
 
 {/block}
 

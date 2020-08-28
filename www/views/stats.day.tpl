@@ -70,7 +70,7 @@
     $(function() {ldelim}
         console.log('day JS');
         var sc2 = document.createElement('script');
-        sc2.src = "/js/stats.day.js";
+        sc2.src = "js/stats.day.js";
 
         console.log(sc2);
         $("#dayScript").before(sc2);
