@@ -25,6 +25,11 @@ A cron job needs to be configured twice per hour to calculate the monthly stats 
 # Firewall Interface Binary
 To interact with firewall rules, a binary needs to be created that has the necessary
  permissions to extract firewall configuration details.
+ 
+ You can typically setup a crontab by executing
+ `sudo crontab -e`
+
+The run at the 59th minute is important to make sure that the most recent stats are calculated before a new month.
 
 This binary is located in the bin directory as `fw.c`. You can compile it into the required binary with:
 `gcc -o fw fw.c`
@@ -38,13 +43,7 @@ with 755 permissions. For webserver group called www-data, you can use:
 
 Now we need to grant it setuid root capabilities, otherwise, apache cannot execute it with the right privileges.
 
-`sudo chown u+s ./fw`
-
-
-You can typically setup a crontab by executing
-`sudo crontab -e`
-
-The run at the 59th minute is important to make sure that the most recent stats are calculated before a new month.
+`sudo chmod u+s ./fw`
 
 ## Requirements
 * Php 7.2
