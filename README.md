@@ -65,3 +65,6 @@ the mysql database has consumed about 530MB of disk space over the past 4 months
 however depends a bit on the amount of distinctive hosts and ports that the hosts on the LAN communicate with.
 
 With data aggregation and pruning functionality in the future, disk usage should be lower.
+
+If you require some config scripts for traffic shaping and to setup a router, they are found in the batch directory as 'router-rules.sh'
+and 'trafficshaper.sh'. 
