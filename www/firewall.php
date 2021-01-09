@@ -36,6 +36,22 @@ function index() {
 
     $rules = json_decode($output[0], true);
 
+    $adds = $rules['nftables'][0]['add'];
+
+    $tables = [];
+    $chains = [];
+    foreach ($adds as $add) {
+        if (isset($add['table'])) {
+            $tkey = $add['table']['name'] . $add['table']['family'];
+            $tables[$tkey] = $add['table'];
+        }elseif (isset($add['chain'])) {
+            $chainName = $add['chain']['name'];
+            $chainTable = $add['chain']['table'];
+            $chainFamily = $add['chain']['family'];
+            $chains[$add['chain']][$add['name']] = $add['chain'];
+        }
+    }
+
     $s->assign("rules", $rules);
     $s->display('firewall.tpl');
 }
