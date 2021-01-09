@@ -14,7 +14,7 @@ int status = 0;
 int main(int argc, char** argv) {
     setuid(0);
     //thanks to: https://bugzilla.redhat.com/show_bug.cgi?id=1635238, i know that you need this command for json export.
-    fp = popen("nft export vm json", "r"); //a fixed command to execute for now.
+    fp = popen("nft -j list ruleset", "r"); //a fixed command to execute for now.
 
     if (fp == NULL) {
         printf("Could not exec the process...\n");

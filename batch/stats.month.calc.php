@@ -120,7 +120,6 @@ if ($month === null) {
            ";
     $res = R::exec($query, ['duration' => $duration]);
 
-    var_dump($res);
     foreach($data as $ip => $datum) {
         $sq2 = "
                     INSERT into main_summary 
