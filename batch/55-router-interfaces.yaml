@@ -1,0 +1,17 @@
+# yaml configuration for netplan to configure the router's interfaces.
+# enp3s0 is the WAN, we don't use ISP's nameservers (they like to hijack NXDomain for ads)
+# enp4s0 is LAN. We disable dhcp there because we're running our own dhcp server.
+network:
+  ethernets:
+    enp3s0:
+      dhcp4: true
+      dhcp4-overrides:
+        use-dns: no
+      nameservers:
+        addresses: [8.8.8.8, 8.8.4.4]
+
+    enp4s0:
+      addresses: [192.168.1.254/24]
+      dhcp4: false
+  version: 2
+  renderer: networkd
