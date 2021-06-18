@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# rules to setup a basic router based on NFTables if you so desire.
+# rules to setup a basic router based on NFTables
 
 nft="/usr/sbin/nft"
 
@@ -43,23 +43,23 @@ ${nft} add rule filter forward udp dport 4500 ip dscp set 46
 nft add rule filter forward udp length {1-600} udp dport {20000-63000} ip dscp set cs4
 
 #forward traffic from WAN to LAN if related to established context
-${nft} add rule filter forward iifname $wan oifname $lan ct state { established, related } accept
+${nft} add rule filter forward iif $wan oif $lan ct state { established, related } accept
 
 #forward from LAN to WAN always
-${nft} add rule filter forward iifname $lan oifname $lan accept
+${nft} add rule filter forward iif $lan oif $lan accept
 
 #drop everything else from WAN to LAN
-${nft} add rule filter forward iifname $wan oifname $lan counter drop
+${nft} add rule filter forward iif $wan oif $lan counter drop
 
 #ipv6 just in case we have this in future.
-${nft} add rule ip6 filter forward iifname $wan oifname $lan ct state { established,related } accept
-${nft} add rule ip6 filter forward iifname $wan oifname $lan icmpv6 type echo-request accept
+${nft} add rule ip6 filter forward iif $wan oif $lan ct state { established,related } accept
+${nft} add rule ip6 filter forward iif $wan oif $lan icmpv6 type echo-request accept
 
 #forward ipv6 from LAN to WAN.
-${nft} add rule ip6 filter forward iifname $lan oifname $wan counter accept
+${nft} add rule ip6 filter forward iif $lan oif $wan counter accept
 
 #drop any other ipv6 from WAN to LAN
-${nft} add rule filter forward iifname $wan oifname $lan counter drop
+${nft} add rule filter forward iif $wan oif $lan counter drop
 
 
 
@@ -70,27 +70,27 @@ ${nft} add rule filter forward iifname $wan oifname $lan counter drop
 ${nft} add rule filter input ct state { established, related } accept
 
 #accept loopback
-${nft} add rule filter input iifname lo accept
+${nft} add rule filter input iif lo accept
 # uncomment next rule to allow ssh in
 #${nft} add rule filter input tcp dport ssh counter log accept
 
 # count my data  received
-${nft} add rule filter input iifname $lan ct state { established, related } counter
+${nft} add rule filter input iif $lan ct state { established, related } counter
 #accept  http, ssh, dns, smb, mysql from LAN
-#${nft} add rule filter input iifname $lan tcp dport { 22, 53, 80, 443, 445, 3306 } accept
+#${nft} add rule filter input iif $lan tcp dport { 22, 53, 80, 443, 445, 3306 } accept
 
 #accept all from lan.
-${nft} add rule filter input iifname $lan accept
+${nft} add rule filter input iif $lan accept
 
 #accept dns and dhcp
-${nft} add rule filter input iifname $lan udp dport { 53, 67, 68 } accept
-${nft} add rule filter input iifname $lan ip protocol icmp accept
-${nft} add rule filter input iifname $wan icmp type { echo-request } counter accept
+${nft} add rule filter input iif $lan udp dport { 53, 67, 68 } accept
+${nft} add rule filter input iif $lan ip protocol icmp accept
+${nft} add rule filter input iif $wan icmp type { echo-request } counter accept
 
 ${nft} add rule filter input counter log drop
 
 ${nft} add rule ip6 filter input ct state { established, related } accept
-${nft} add rule ip6 filter input iifname lo accept
+${nft} add rule ip6 filter input iif lo accept
 
 
 #uncomment next rule to allow ssh in over ipv6
@@ -106,10 +106,10 @@ ${nft} add rule ip6 filter input counter drop
 #OUTPUT CHAIN RULESET
 #=======================================================
 ${nft} add rule filter output ct state { established, related, new } counter accept
-${nft} add rule filter output iifname lo accept
+${nft} add rule filter output iif lo accept
 
 ${nft} add rule ip6 filter output ct state { established, related, new } accept
-${nft} add rule ip6 filter output oifname lo accept
+${nft} add rule ip6 filter output oif lo accept
 
 
 #SET MASQUERADING DIRECTIVE
