@@ -3,6 +3,8 @@ $(document).ready(function() {
     //table setup.
     var opts = {
         order: [[3, "desc"]],
+        deferRender: true,
+        autoWidth: false,
         columns: [
             {data: 'Hostname'},
             {
@@ -31,6 +33,7 @@ $(document).ready(function() {
                 data: 'total',
                 render: function(data, type, row) {
                     if (type === "display") {
+                        console.log("rendering total value");
                         return formatBytes(data);
                     }else {
                         return data;

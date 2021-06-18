@@ -35,6 +35,12 @@ wan=enp3s0
 lan=enp4s0
 
 #FORWARDING RULESET
+# mark O2 UK Wifi calling traffic for expedited forwarding
+${nft} add rule filter forward udp sport 4500 ip dscp set 46
+${nft} add rule filter forward udp dport 4500 ip dscp set 46
+
+#udp high ports, small packets are likely gaming traffic
+nft add rule filter forward udp length {1-600} udp dport {20000-63000} ip dscp set cs4
 
 #forward traffic from WAN to LAN if related to established context
 ${nft} add rule filter forward iifname $wan oifname $lan ct state { established, related } accept
