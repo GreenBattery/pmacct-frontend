@@ -10,7 +10,7 @@ $hostnames = nucc1\Hostnames::read_leases();
 R::setup( 'mysql:host=localhost;dbname=bandwidth',
     'router', 'router' ); //for both mysql or mariaDB
 $s = new Smarty();
-$s->setTemplateDir($_SERVER['DOCUMENT_ROOT'] . '/views/');
+$s->setTemplateDir(__DIR__ . '/../includes/views/');
 
 $s->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/../template-cache/');
 $s->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/../template-config/');

@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
    our goal with this program is to interact with nftables for firewall configurations.
@@ -20,9 +21,20 @@ int main(int argc, char** argv) {
         printf("Could not exec the process...\n");
         return 0;
     }
-    while (fgets(data, 1024, fp) != NULL) {
-        printf("%s", data);
+
+    int len = 0;
+
+    /*while (fgets(data, 1024, fp) != NULL) {
+        fwrite(data,strlen(data),1,stdout);
+        
+    }*/
+
+    while (!feof(fp)) {
+        len = fread(data, 1, 1024, fp);
+        fwrite(data, 1, len, stdout);
     }
+
+    
 
     status = pclose(fp); //close the handle.
 }

@@ -2,7 +2,8 @@
 require '../vendor/autoload.php';
 
 $S = new Smarty();
-$S->setTemplateDir($_SERVER['DOCUMENT_ROOT'] . '/views/');
+$S->setTemplateDir(__DIR__ . '/../includes/views/');
+
 
 $S->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/../template-cache/');
 $S->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/../template-config/');

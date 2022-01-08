@@ -10,7 +10,7 @@ $hostnames = nucc1\Hostnames::read_leases();
 R::setup( 'mysql:host=localhost;dbname=bandwidth',
     'router', 'router' ); //for both mysql or mariaDB
 $s = new Smarty();
-$s->setTemplateDir($_SERVER['DOCUMENT_ROOT'] . '/views/');
+$s->setTemplateDir(__DIR__  . '/../includes/views/');
 
 $s->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/../template-cache/');
 $s->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/../template-config/');
@@ -31,10 +31,21 @@ call_user_func($endpoints[$action]);
 
 function index() {
     global $s;
-    $output = [];
-    $r = exec("../bin/fw",$output);
-
-    $rules = json_decode($output[0], true);
+    $output = "";
+    
+    $fp = popen("../bin/fw", "rb");
+   
+    stream_set_blocking($fp, true);
+    
+    while (!feof($fp)) {
+        $output .= fread($fp, 2048);
+        fseek($fp, strlen($output));
+    }
+    
+   
+    $rules = json_decode($output, true);
+    //var_dump($rules['nftables'][3]);
+    
 
     $s->assign("rules", $rules);
     $s->display('firewall.tpl');
