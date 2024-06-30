@@ -21,7 +21,9 @@ create table inbound_%m%Y (
         bytes BIGINT UNSIGNED NOT NULL,
         stamp_inserted DATETIME NOT NULL,
         stamp_updated DATETIME,
-        PRIMARY KEY (agent_id, mac_src, mac_dst, vlan, ip_src, ip_dst, src_port, dst_port, ip_proto, stamp_inserted, post_nat_ip_dst, post_nat_port_dst)
+        PRIMARY KEY (agent_id, mac_src, mac_dst, vlan, ip_src, ip_dst, src_port, dst_port, ip_proto,
+        post_nat_ip_dst, post_nat_ip_src, post_nat_port_dst, post_nat_port_src,
+        stamp_inserted)
 );
 -- --------------------------------------------------------
 
@@ -47,7 +49,9 @@ create table outbound_%m%Y (
         bytes BIGINT UNSIGNED NOT NULL,
         stamp_inserted DATETIME NOT NULL,
         stamp_updated DATETIME,
-        PRIMARY KEY (agent_id, mac_src, mac_dst, vlan, ip_src, ip_dst, src_port, dst_port, ip_proto, stamp_inserted)
+        PRIMARY KEY (agent_id, mac_src, mac_dst, vlan, ip_src, ip_dst, src_port, dst_port, ip_proto,
+        post_nat_ip_dst, post_nat_ip_src, post_nat_port_dst, post_nat_port_src,
+        stamp_inserted)
 );
 
 -----------------------------------------
