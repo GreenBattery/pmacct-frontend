@@ -13,11 +13,15 @@ create table inbound_%m%Y (
         src_port INT(2) UNSIGNED NOT NULL,
         dst_port INT(2) UNSIGNED NOT NULL,
         ip_proto CHAR(20) NOT NULL,
+        post_nat_ip_dst VARCHAR(50) DEFAULT NULL,
+        post_nat_port_src INT(2) DEFAULT NULL,
+        post_nat_ip_src VARCHAR(50) DEFAULT NULL,
+        post_nat_port_dst INT(2) DEFAULT NULL,
         packets INT UNSIGNED NOT NULL,
         bytes BIGINT UNSIGNED NOT NULL,
         stamp_inserted DATETIME NOT NULL,
         stamp_updated DATETIME,
-        PRIMARY KEY (agent_id, mac_src, mac_dst, vlan, ip_src, ip_dst, src_port, dst_port, ip_proto, stamp_inserted)
+        PRIMARY KEY (agent_id, mac_src, mac_dst, vlan, ip_src, ip_dst, src_port, dst_port, ip_proto, stamp_inserted, post_nat_ip_dst, post_nat_port_dst)
 );
 -- --------------------------------------------------------
 
@@ -36,6 +40,10 @@ create table outbound_%m%Y (
         dst_port INT(2) UNSIGNED NOT NULL,
         ip_proto CHAR(20) NOT NULL,
         packets INT UNSIGNED NOT NULL,
+        post_nat_ip_dst VARCHAR(50) DEFAULT NULL,
+        post_nat_port_src INT(2) DEFAULT NULL,
+        post_nat_ip_src VARCHAR(50) DEFAULT NULL,
+        post_nat_port_dst INT(2) DEFAULT NULL,
         bytes BIGINT UNSIGNED NOT NULL,
         stamp_inserted DATETIME NOT NULL,
         stamp_updated DATETIME,
