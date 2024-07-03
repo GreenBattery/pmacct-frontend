@@ -40,7 +40,7 @@ function index() {
  * stats for specified day
  */
 function getDay() {
-    global $s, $table_in, $table_out, $hostnames;
+    global $s, $tableIn, $table_out, $hostnames;
     $s->caching = 0;
 
     $date = !empty($_GET['date']) ? (int) $_GET['date'] : strtotime("today");
@@ -54,13 +54,13 @@ function getDay() {
         date('d', $date), date('Y', $date));
 
     //make the table name in _mmYY format. for inbound table
-    $table_in = "inbound_" . date("mY", $date);
+    $tableIn = "inbound_" . date("mY", $date);
     $table_out = "outbound_" . date("mY", $date);
 
     //fetch inbound byte stats
     $sql = "
 			SELECT ip_dst AS ip, SUM(bytes) AS bytes_in
-			FROM   $table_in
+			FROM   $tableIn
 			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
 			GROUP BY ip
 			ORDER BY bytes_in DESC";
