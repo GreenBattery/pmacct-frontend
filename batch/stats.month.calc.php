@@ -33,7 +33,7 @@ $oa = [
 ];
 $options = getopt("", $oa);
 
-R::setup( 'mysql:host=localhost;dbname=bandwidth',
+R::setup( 'mysql:host=localhost;dbname=router',
     'router', 'router' ); //for both mysql or mariaDB
 
 if (empty($options) || array_key_exists('help', $options)) {
@@ -74,37 +74,45 @@ if ($month === null) {
     $sql ="
         SELECT 
             ip_src AS ip,
+            mac_src as mac,
             SUM(bytes) AS bytes
         FROM $table_out
         GROUP BY
-            ip
+            ip, mac
 	";
+
 
     $b_out = R::getAll($sql, []);
     echo "Calculating $month: " . count($b_out) . " entries in outbound table.\n";
 
+    //the where clause is hard-coded, can be made a user-configurable value.
     $sql ="
         SELECT 
-            ip_dst AS ip,
+            IF(post_nat_ip_dst = 0,ip_dst, post_nat_ip_dst) AS ip,
             SUM(bytes) AS bytes
         FROM $table_in
+        WHERE
+            post_nat_ip_dst = 0 
+            OR post_nat_ip_dst LIKE '192.168.1.%'
         GROUP BY
             ip
 	";
+
     $b_in = R::getAll($sql, []); //fetch inbound aggregates for month.
     echo "Calculating $month: " . count($b_in) . " entries in inbound table.\n";
 
     $data = [];
     foreach($b_out as $b) {
         $ip = $b['ip'];
-        $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0]; //extract or initialize
+        $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0, 'mac' => '']; //extract or initialize
         $temp['bytes_out'] = $b['bytes'];
+        $temp['mac'] = $b['mac'];
         $data[$ip] = $temp;
     }
 
     foreach($b_in as $b) {
         $ip = $b['ip'];
-        $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0]; //extract or initialize
+        $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0, 'mac' => '']; //extract or initialize
         $temp['bytes_in'] = $b['bytes'];
         $data[$ip] = $temp;
     }
@@ -113,7 +121,7 @@ if ($month === null) {
 
     //first delete all stats for this month before we insert the newly calculated stats
     $query = "DELETE FROM 
-               bandwidth.main_summary 
+               main_summary 
             WHERE
                 duration_type = 'month' AND 
                 duration = :duration
@@ -122,10 +130,12 @@ if ($month === null) {
 
     foreach($data as $ip => $datum) {
         $sq2 = "
-                    INSERT into main_summary 
+                    INSERT into main_summary
+                    (id, ip, mac, duration_type, duration, bytes_in, bytes_out, stamp_inserted)
                     values (
                       null,
                       :ip_addr,
+                      :mac,
                       'month',
                       :duration,
                       :bytes_in,
@@ -138,7 +148,8 @@ if ($month === null) {
             ':ip_addr'=> $ip,
             ':duration' => $duration,
             ':bytes_in' => $datum['bytes_in'],
-            ':bytes_out'=> $datum['bytes_out']
+            ':bytes_out'=> $datum['bytes_out'],
+            ':mac' => $datum['mac']
         ]);
 
         //check result of query.
