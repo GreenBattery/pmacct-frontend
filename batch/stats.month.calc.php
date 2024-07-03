@@ -17,6 +17,11 @@ use \RedBeanPHP\R as R;
 */
 
 /*
+ * configure this script to run on a schedule of your choice with cron. I like:
+ *         3,17,28,44,59 * * * *  --- 5 times per hour
+ */
+
+/*
  * for the long options:
  * all means calculate everything you find in the database, and aggregate by IP per month.
  *
