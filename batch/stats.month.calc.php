@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
 /**
- * User: nucc1
  * Date: 02/07/2019
  * Time: 19:26
  */
