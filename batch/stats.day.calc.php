@@ -164,9 +164,8 @@ if ($requestedDay === null) {
             //write a message to syslog.
             syslog(LOG_NOTICE,"failed to insert SUMMARY 'day' data for $ip, dur: $requestedDayString ");
         }
-
-        echo "all done. \n";
     }
+    echo "all done. \n";
 
 }
 
