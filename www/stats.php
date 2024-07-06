@@ -3,11 +3,13 @@ date_default_timezone_set("utc");
 require '../vendor/autoload.php';
 
 use nucc1\Hostnames;
+use nucc1\Config;
 use \RedBeanPHP\R as R;
 
 $hostnames = nucc1\Hostnames::read_leases();
+$dbname = Config::$database['dbname'];
 
-R::setup( 'mysql:host=localhost;dbname=bandwidth',
+R::setup( "mysql:host=localhost;dbname=$dbname",
     'router', 'router' ); //for both mysql or mariaDB
 $s = new Smarty();
 $s->setTemplateDir(__DIR__ . '/../includes/views/');
@@ -50,74 +52,43 @@ function getDay() {
     $yest = $cd->sub($d1)->getTimestamp(); //yesterday.
     $tomm = $cd->add($d1)->getTimestamp(); //tomorrow
 
-    $end_date = mktime(23, 59, 59, date('m', $date),
-        date('d', $date), date('Y', $date));
-
-    //make the table name in _mmYY format. for inbound table
-    $tableIn = "inbound_" . date("mY", $date);
-    $table_out = "outbound_" . date("mY", $date);
-
     //fetch inbound byte stats
     $sql = "
-			SELECT ip_dst AS ip, SUM(bytes) AS bytes_in
-			FROM   $tableIn
-			WHERE stamp_inserted BETWEEN FROM_UNIXTIME(:start_date) AND FROM_UNIXTIME(:end_date)
-			GROUP BY ip
-			ORDER BY bytes_in DESC";
-    $b_in = R::getAll($sql, [
-            ':start_date' => $date,
-            ':end_date' => $end_date
+			SELECT 
+			    GROUP_CONCAT(ip SEPARATOR ', ') AS ip,
+			    mac as hostname,
+			    sum(bytes_in) as bytes_in,
+			    sum(bytes_out) as bytes_out,
+			    sum(bytes_in) + sum(bytes_out) as total
+			FROM   main_summary
+			WHERE 
+			    duration_type = 'day'
+			    AND duration = :selected_date
+			GROUP BY mac
+        ";
+    $bwStats = R::getAll($sql, [
+            ':selected_date' => $cd->format('Y-m-d')
         ]
     );
 
-//fetch outbound byte stats
-//sql for fetching outbound/upload stats.
-    $sql = "
-			SELECT ip_src AS ip, SUM(bytes) AS bytes_out
-			FROM   $table_out
-			WHERE stamp_inserted BETWEEN FROM_UNIXTIME($date) AND FROM_UNIXTIME($end_date)
-			GROUP BY ip";
+    $totals = ['bytes_in' => 0, 'bytes_out' => 0, 'aggregate' => 0];
+    foreach ($bwStats as $k => $v) {
+        $bwStats[$k]['bytes_in_formatted'] = formatBytes($v['bytes_in']);
+        $bwStats[$k]['bytes_out_formatted'] = formatBytes($v['bytes_out']);
+        $bwStats[$k]['aggregate_formatted'] = formatBytes($v['total']);
 
-    $b_out = R::getAll($sql);
-
-    $b_t = [];
-    $totals['bytes_out'] = 0;
-    $totals['bytes_in'] = 0;
-
-    foreach($b_out as $stat) {
-        $ip = $stat['ip'];
-        $b_t[$ip]['bytes_out'] = $stat['bytes_out'];
-        $b_t[$ip]['bytes_in'] = 0; //ensure this key exists.
-        $b_t[$ip]['total'] = $stat['bytes_out']; //this is first time, so set this value.
-        $b_t[$ip]['hostname'] = $hostnames[$stat['ip']] ?? $ip; //set the hostname if available.
-
-        $totals['bytes_out'] += $stat['bytes_out'];
-    }
-    foreach ($b_in as $stat) {
-        $ip = $stat['ip'];
-        $b_t[$ip]['bytes_in'] = $stat['bytes_in'];
-        if (isset($b_t[$ip]['total'])) { //if there is a value, add to it.
-            $b_t[$ip]['total'] += $stat['bytes_in'];
-        }else {
-            $b_t[$ip]['total'] = $stat['bytes_in'];
-        }
-
-        if (!isset($b_t[$ip]['bytes_out'])) {
-            $b_t[$ip]['bytes_out'] = 0; //ensure that this key exists.
-        }
-        $b_t[$ip]['hostname'] = $hostnames[$stat['ip']] ?? $ip; //set the hostname if available.
-        $totals['bytes_in'] += $stat['bytes_in'];
+        $totals['bytes_in'] += $v['bytes_in'];
+        $totals['bytes_out'] += $v['bytes_out'];
+        $totals['aggregate'] += $v['total'];
     }
 
-    $totals['total'] = $totals['bytes_in'] + $totals['bytes_out'];
-    $totals['bytes_out_formatted'] = formatBytes($totals['bytes_out']);
     $totals['bytes_in_formatted'] = formatBytes($totals['bytes_in']);
-    $totals['aggregate_formatted'] = formatBytes(($totals['bytes_in'] + $totals['bytes_out']));
-
+    $totals['bytes_out_formatted'] = formatBytes($totals['bytes_out']);
+    $totals['aggregate_formatted'] = formatBytes($totals['aggregate']);
 
 
     $do = new DateTime("@$date");
-    $data = ['stats' => $b_t, 'totals' => $totals];
+    $data = ['stats' => $bwStats, 'totals' => $totals];
     $s->assign('data',$data);
     $s->assign('date', $do->format('Y-m-d'));
     $s->assign('links', ['prev' => $yest, 'next'=> $tomm]);
