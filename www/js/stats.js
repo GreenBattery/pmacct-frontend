@@ -56,7 +56,7 @@ function updateActiveTab(args=null) {
             let handle = '#' + action;
             $(handle).hide();
             $(handle).html(data); //update tab contents.
-            $(handle).fadeIn(3000);
+            $(handle).fadeIn(300);
         },
         complete: function(u, o){
             tabXhr = null;

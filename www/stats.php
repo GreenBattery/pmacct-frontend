@@ -18,6 +18,20 @@ $s->setCompileDir($_SERVER['DOCUMENT_ROOT'] . '/../template-cache/');
 $s->setConfigDir($_SERVER['DOCUMENT_ROOT'] . '/../template-config/');
 $s->setCacheDir($_SERVER['DOCUMENT_ROOT'] .'/../template-cache/');
 
+$summaryQuery = "
+    SELECT 
+        GROUP_CONCAT(DISTINCT ip ORDER BY ip SEPARATOR ', ') AS ip,
+        mac as hostname,
+        sum(bytes_in) as bytes_in,
+        sum(bytes_out) as bytes_out,
+        sum(bytes_in) + sum(bytes_out) as total
+    FROM   main_summary
+    WHERE 
+        duration_type = :duration_type
+        AND duration = :selected_date
+    GROUP BY mac
+";
+
 $endpoints = [
     'default'=> 'index',
     'day' => 'getDay',
@@ -42,7 +56,7 @@ function index() {
  * stats for specified day
  */
 function getDay() {
-    global $s, $tableIn, $table_out, $hostnames;
+    global $s, $tableIn, $table_out, $hostnames, $summaryQuery;
     $s->caching = 0;
 
     $date = !empty($_GET['date']) ? (int) $_GET['date'] : strtotime("today");
@@ -53,21 +67,9 @@ function getDay() {
     $tomm = $cd->add($d1)->getTimestamp(); //tomorrow
 
     //fetch inbound byte stats
-    $sql = "
-			SELECT 
-			    GROUP_CONCAT(ip SEPARATOR ', ') AS ip,
-			    mac as hostname,
-			    sum(bytes_in) as bytes_in,
-			    sum(bytes_out) as bytes_out,
-			    sum(bytes_in) + sum(bytes_out) as total
-			FROM   main_summary
-			WHERE 
-			    duration_type = 'day'
-			    AND duration = :selected_date
-			GROUP BY mac
-        ";
-    $bwStats = R::getAll($sql, [
-            ':selected_date' => $cd->format('Y-m-d')
+    $bwStats = R::getAll($summaryQuery, [
+            ':selected_date' => $cd->format('Y-m-d'),
+            ':duration_type' => 'day'
         ]
     );
 
@@ -102,7 +104,7 @@ function getDay() {
  * get month stats
  */
 function getMonth() {
-    global $s, $hostnames;
+    global $s, $hostnames, $summaryQuery;
     // Querystring parameters
     $year = !empty($_GET['year']) ? (int) $_GET['year'] : date('Y');
     $month = !empty($_GET['month']) ? (int) $_GET['month'] : date('m');
@@ -124,23 +126,12 @@ function getMonth() {
     $nm = $nextD->format("m"); //next month
     $ny = $nextD->format("Y"); //year for next month
 
-    $last_day = date('t', $start_date); //get the last day of this month from timestamp.
+    $last_day = $cd->format('t'); //get the last day of this month from timestamp.
 
-    $ctime = mktime(); //current timesamp for use in main_summary.
-    $cmonth = date("mY", $start_date); //get the MMYYYY to use as the duration key in main_summary table.
+    $cMonth = $cd->format('mY');
 
-    //get the epoch in localtime?
-    $end_date = mktime(23, 59, 59, date('n', $start_date), $last_day);
-    $sql = "
-          SELECT 
-            * 
-          FROM 
-            main_summary 
-          WHERE 
-            duration_type = 'month' and 
-            duration = :duration
-          ";
-    $prev_stats = R::getAll($sql, [':duration' => $cmonth]);
+    $bwStats = R::getAll($summaryQuery,
+        [':duration_type' => 'month', 'selected_date' => $cMonth]);
 
     //initialise the totals array.
     $totals = array(
@@ -148,28 +139,23 @@ function getMonth() {
         'bytes_out'=>0
     );
 
-    $data = []; // prepare results array.
-    //prefill the data and totals arrays with previously cached stats.
-    foreach ($prev_stats as $pstat) {
-        $ip = $pstat['ip'];
-        $data[$ip]['bytes_in'] = $pstat['bytes_in'];
-        $data[$ip]['bytes_out'] = $pstat['bytes_out'];
-        $data[$ip]['total'] = $pstat['bytes_in'] + $pstat['bytes_out'];
-        $data[$ip]['hostname'] = $hostnames[$ip] ?? $ip; //set the hostname if available.
+    $totals = ['bytes_in' => 0, 'bytes_out' => 0, 'aggregate' => 0];
+    foreach ($bwStats as $k=>$pstat) {
+        $bwStats[$k]['bytes_in'] = $pstat['bytes_in'];
+        $bwStats[$k]['bytes_out'] = $pstat['bytes_out'];
+        $bwStats[$k]['total'] = $pstat['bytes_in'] + $pstat['bytes_out'];
 
         $totals['bytes_in'] += $pstat['bytes_in'];
         $totals['bytes_out'] += $pstat['bytes_out'];
+        $totals['aggregate'] += $pstat['total'];
     }
 
-    $month_data = [];//we'll compute the data for main_summary table here too.
-
-    $totals['total'] = $totals['bytes_in'] + $totals['bytes_out'];
-    $totals['bytes_out_formatted'] = formatBytes($totals['bytes_out']);
     $totals['bytes_in_formatted'] = formatBytes($totals['bytes_in']);
-    $totals['aggregate_formatted'] = formatBytes(($totals['bytes_in'] + $totals['bytes_out']));
+    $totals['bytes_out_formatted'] = formatBytes($totals['bytes_out']);
+    $totals['aggregate_formatted'] = formatBytes($totals['aggregate']);
 
 
-    $s->assign('data', ['stats' =>$data, 'totals' => $totals]);
+    $s->assign('data', ['stats' =>$bwStats, 'totals' => $totals]);
     $s->assign('date', $cd->format("F Y"));
     $s->assign('links', ['lm'=>$lm, 'py' => $py, 'nm' => $nm, 'ny'=> $ny]);
     $s->display('stats.month.tpl');

@@ -46,7 +46,7 @@
                     <tbody>
                     {foreach from=$data.stats key=ip item=stat}
                         <tr>
-                            <td><span>{$ip}</span> <span class="badge badge-info">{$stat.hostname}</span></td>
+                            <td class="w-75"><span class="badge badge-info">{$stat.hostname}</span> <span>{$stat.ip}</span></td>
                             <td>{$stat.bytes_in}</td>
                             <td>{$stat.bytes_out}</td>
                             <td>{$stat.total}</td>
