@@ -1,3 +1,5 @@
 .idea/
 /nbproject/
 .vscode/
+template-cache/*
+template-config/*
