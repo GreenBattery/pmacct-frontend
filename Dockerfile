@@ -15,7 +15,5 @@ ENV DB_PASSWORD='secret'
 ENV DB_NAME='router'
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug 
 
 EXPOSE 80
