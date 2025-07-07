@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => '__root__',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => '07d32888036f0b8c6cb003fecf5d789d59d4a19d',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        '__root__' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => '07d32888036f0b8c6cb003fecf5d789d59d4a19d',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'gabordemooij/redbean' => array(
+            'pretty_version' => 'v5.7.5',
+            'version' => '5.7.5.0',
+            'reference' => 'fc08c2f9bc5a4f5074721b0d9039881be244f842',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../gabordemooij/redbean',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'smarty/smarty' => array(
+            'pretty_version' => 'v4.5.5',
+            'version' => '4.5.5.0',
+            'reference' => 'c4851c12e34ff80073ddeb7d98b059d57dea9de2',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../smarty/smarty',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);
