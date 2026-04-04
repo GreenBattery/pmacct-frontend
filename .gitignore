@@ -3,3 +3,5 @@
 .vscode/
 template-cache/*
 template-config/*
+.env
+vendor/

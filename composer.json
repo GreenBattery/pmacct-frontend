@@ -1,0 +1,12 @@
+{
+  "require": {
+    "monolog/monolog": "^3.10",
+    "gabordemooij/redbean": "~5.3",
+    "smarty/smarty": "~4"
+  },
+  "autoload": {
+    "psr-4": {
+      "nucc1\\": "lib/"
+    }
+  }
+}
