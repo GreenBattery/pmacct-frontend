@@ -2,7 +2,8 @@
   "require": {
     "monolog/monolog": "^3.10",
     "gabordemooij/redbean": "~5.3",
-    "smarty/smarty": "~4"
+    "smarty/smarty": "~4",
+    "ext-pdo": "*"
   },
   "autoload": {
     "psr-4": {

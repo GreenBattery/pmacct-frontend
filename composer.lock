@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a974e552b2dd2a7a20abfc915d85592",
+    "content-hash": "b0d25d73082ab13c5ae32c22a0badb94",
     "packages": [
         {
             "name": "gabordemooij/redbean",
@@ -283,7 +283,9 @@
     "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "ext-pdo": "*"
+    },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

@@ -6,11 +6,21 @@
  */
 
 date_default_timezone_set("utc");
-require __DIR__ . './vendor/autoload.php';
+require './vendor/autoload.php';
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Level;
+use Monolog\Logger;
 use nucc1\Hostnames;
 use \RedBeanPHP\R as R;
 
+use nucc1\Config;
+
+
+$logger = new Logger('stats');
+$logger->pushHandler(new StreamHandler('php://stderr', Level::Debug));
+
+$logger->info("Starting stats.day.calc.php");
 /*
  * we wish to calculate the monthly statistics and update the main_summary table periodically so that the
  * UI display of the stats is faster.

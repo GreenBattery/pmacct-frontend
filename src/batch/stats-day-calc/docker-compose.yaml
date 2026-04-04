@@ -1,0 +1,9 @@
+services:
+  batch-job:
+    build:
+      context: ../../../
+      dockerfile: ./src/batch/stats-day-calc/Dockerfile
+    env_file: .env
+    volumes:
+      - ./logs:/var/www/logs # If you want to persist logs on the host
+      - /var/www/vendor
