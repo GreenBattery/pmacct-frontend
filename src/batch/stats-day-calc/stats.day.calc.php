@@ -57,12 +57,13 @@ try{
 } catch (PDOException $e) {
     echo $e->getMessage();
     print_r($e->getTraceAsString());
+    exit(1);
 }
 
 R::setup( "mysql:host=$dbHost;dbname=$dbName",
     $dbUser, $dbPassword ); //for both mysql or mariaDB
 
-echo "Starting to run?";
+$logger->info("Starting run...");
 
 if (empty($options) || array_key_exists('help', $options)) {
     echo "
@@ -76,9 +77,6 @@ if (empty($options) || array_key_exists('help', $options)) {
 
 print_r($options);
 $inputDate = $options['day'] ?? date('Y-m');
-if (isset($options['current'])) {
-    
-}
 
 if (isset($options['all'])) {
     $requestedDay = null; //ignore month and current if all is requested.
@@ -100,10 +98,18 @@ if ($requestedDay === false) {
 $tableSuffix = $requestedDay->format('mY');
 $requestedDayString = $requestedDay->format('Y-m-d');
 
+$logger->info("Calculating stats for $requestedDayString");
+
 $tableIn = "inbound_" . $tableSuffix;
 $tableOut = "outbound_" . $tableSuffix;
 
-$sql ="
+$logger->info("Using tables $tableIn and $tableOut");
+
+$logger->info("Start DB transaction");
+try {
+    R::begin(); //start transaction.
+
+    $sql ="
     SELECT 
         ip_src AS ip,
         mac_src as mac,
@@ -114,60 +120,57 @@ $sql ="
     GROUP BY
         ip, mac
 ";
-
-
-
-$b_out = R::getAll($sql, []);
-echo "Calculating $requestedDayString: " . count($b_out) . " entries in outbound table.\n";
+    $b_out = R::getAll($sql, []);
+    $logger->info("Calculating $requestedDayString: " . count($b_out) . " entries in outbound table.");
 
 //the where clause is hard-coded, can be made a user-configurable value.
-$sql ="
+    $sql ="
     SELECT 
         IF(post_nat_ip_dst = 0,ip_dst, post_nat_ip_dst) AS ip,
         SUM(bytes) AS bytes
     FROM $tableIn
     WHERE
         (post_nat_ip_dst = 0 
-        OR post_nat_ip_dst LIKE '192.168.1.%')
+        OR post_nat_ip_dst LIKE '192.168.%.%')
         AND stamp_inserted BETWEEN :start AND :end
         
     GROUP BY
         ip
 ";
 
-$b_in = R::getAll($sql, [':start' => $requestedDayString . ' 00:00:00', ':end' => $requestedDayString. ' 23:59:59']); //fetch inbound aggregates for month.
-echo "Calculating $requestedDayString: " . count($b_in) . " entries in inbound table.\n";
+    $b_in = R::getAll($sql, [':start' => $requestedDayString . ' 00:00:00', ':end' => $requestedDayString. ' 23:59:59']); //fetch inbound aggregates for month.
+    $logger->info("Calculating $requestedDayString: " . count($b_in) . " entries in inbound table.");
 
 
-$data = [];
-foreach($b_out as $b) {
-    $ip = $b['ip'];
-    $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0, 'mac' => '']; //extract or initialize
-    $temp['bytes_out'] = $b['bytes'];
-    $temp['mac'] = $b['mac'];
-    $data[$ip] = $temp;
-}
+    $data = [];
+    foreach($b_out as $b) {
+        $ip = $b['ip'];
+        $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0, 'mac' => '']; //extract or initialize
+        $temp['bytes_out'] = $b['bytes'];
+        $temp['mac'] = $b['mac'];
+        $data[$ip] = $temp;
+    }
 
-foreach($b_in as $b) {
-    $ip = $b['ip'];
-    $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0, 'mac' => '']; //extract or initialize
-    $temp['bytes_in'] = $b['bytes'];
-    $data[$ip] = $temp;
-}
+    foreach($b_in as $b) {
+        $ip = $b['ip'];
+        $temp = $data[$ip] ?? ['bytes_in' => 0, 'bytes_out' => 0, 'mac' => '']; //extract or initialize
+        $temp['bytes_in'] = $b['bytes'];
+        $data[$ip] = $temp;
+    }
 
-echo "Pushing updated stats to DB\n";
+    $logger->info("Pushing updated stats to DB");
 
-//first delete all stats for this month before we insert the newly calculated stats
-$query = "DELETE FROM 
+    //first delete all stats for this month before we insert the newly calculated stats
+    $query = "DELETE FROM 
             main_summary 
         WHERE
             duration_type = 'day' AND 
             duration = :duration
         ";
-$res = R::exec($query, ['duration' => $requestedDayString]);
+    $res = R::exec($query, ['duration' => $requestedDayString]);
 
-foreach($data as $ip => $datum) {
-    $sq2 = "
+    foreach($data as $ip => $datum) {
+        $sq2 = "
                 INSERT into main_summary
                 (id, ip, mac, duration_type, duration, bytes_in, bytes_out, stamp_inserted)
                 values (
@@ -182,17 +185,25 @@ foreach($data as $ip => $datum) {
                 )
             ";
 
-    $res2 = R::exec($sq2, [
-        ':ip_addr'=> $ip,
-        ':duration' => $requestedDayString,
-        ':bytes_in' => $datum['bytes_in'],
-        ':bytes_out'=> $datum['bytes_out'],
-        ':mac' => $datum['mac']
-    ]);
-    //check result of query.
-    if (!$res2) {
-        //write a message to syslog.
-        syslog(LOG_NOTICE,"failed to insert SUMMARY 'day' data for $ip, dur: $requestedDayString ");
+        $res2 = R::exec($sq2, [
+                ':ip_addr'=> $ip,
+                ':duration' => $requestedDayString,
+                ':bytes_in' => $datum['bytes_in'],
+                ':bytes_out'=> $datum['bytes_out'],
+                ':mac' => $datum['mac']
+        ]);
+        //check result of query.
+        if (!$res2) {
+            $logger->error("failed to insert SUMMARY 'day' data for $ip, dur: $requestedDayString ");
+        }
     }
+    $logger->info("Commit transaction");
+    R::commit();
+    $logger->info("all done.");
+
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage();
+    R::rollback();
+    exit(1);
 }
-echo "all done. \n";
+
