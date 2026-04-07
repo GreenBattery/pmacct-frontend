@@ -30,7 +30,7 @@ $summaryQuery = "
         sum(bytes_in) as bytes_in,
         sum(bytes_out) as bytes_out,
         sum(bytes_in) + sum(bytes_out) as total
-    FROM   main_summary
+    FROM   router.main_summary
     WHERE
         duration_type = :duration_type
         AND duration = :selected_date

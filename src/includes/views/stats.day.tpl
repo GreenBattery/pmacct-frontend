@@ -59,7 +59,7 @@
                         <td colspan="1">Totals</td>
                         <td>{$data.totals.bytes_in}</td>
                         <td>{$data.totals.bytes_out}</td>
-                        <td>{$data.totals.total}</td>
+                        <td>{$data.totals.aggregate_formatted}</td>
                     </tr>
                     </tfoot>
                 </table>
