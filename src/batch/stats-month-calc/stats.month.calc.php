@@ -6,9 +6,8 @@
  */
 
 date_default_timezone_set("utc");
-require __DIR__ . '/../vendor/autoload.php';
+require './vendor/autoload.php';
 
-use nucc1\Hostnames;
 use \RedBeanPHP\R as R;
 
 /*
@@ -37,8 +36,13 @@ $oa = [
 ];
 $options = getopt("", $oa);
 
-R::setup( 'mysql:host=localhost;dbname=router',
-    'router', 'router' ); //for both mysql or mariaDB
+$dbUser = getenv("DB_USER");
+$dbPassword = getenv("DB_PASSWORD");
+$dbHost = getenv("DB_HOST");
+$dbName = getenv("DB_NAME");
+
+R::setup( "mysql:host=$dbHost;dbname=$dbName",
+    $dbUser, $dbPassword ); //for both mysql or mariaDB
 
 if (empty($options) || array_key_exists('help', $options)) {
     echo "
