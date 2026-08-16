@@ -38,6 +38,7 @@ services:
       DB_NAME: ${DB_NAME:-router}
       NFACCTD_PORT: 2055
       LOCAL_SUBNET: ${LOCAL_SUBNET:-192.168.1.0/24}
+      LOCAL_SUBNET_V6: ${LOCAL_SUBNET_V6:-fd00::/8}
     depends_on:
       db:
         condition: service_healthy

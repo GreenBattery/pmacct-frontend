@@ -12,10 +12,10 @@ nfacctd_st_time: 30
 
 ! interested in in and outbound traffic
 aggregate[in]: src_host, dst_host, proto, tag, src_mac, dst_mac, vlan, src_port, dst_port
-aggregate_filter[in]: dst net ${LOCAL_SUBNET}
+aggregate_filter[in]: (dst net ${LOCAL_SUBNET} or dst net ${LOCAL_SUBNET_V6}) and not (src net ${LOCAL_SUBNET} or src net ${LOCAL_SUBNET_V6})
 
 aggregate[out]: src_host, dst_host, proto, tag, src_mac, dst_mac, vlan, src_port, dst_port
-aggregate_filter[out]: src net ${LOCAL_SUBNET}
+aggregate_filter[out]: (src net ${LOCAL_SUBNET} or src net ${LOCAL_SUBNET_V6}) and not (dst net ${LOCAL_SUBNET} or dst net ${LOCAL_SUBNET_V6})
 
 plugins: mysql[in], mysql[out]
 
