@@ -4,6 +4,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pmacct \
     gettext-base \
     default-mysql-client \
+    tcpdump \
+    nano \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /etc/pmacct
