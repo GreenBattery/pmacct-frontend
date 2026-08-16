@@ -20,15 +20,20 @@ class Config
     {
         $log = self::getLogger();
 
+        $host = getenv('DB_HOST') ?: 'db';
+        $dbname = getenv('DB_NAME') ?: 'router';
+        $username = getenv('DB_USER') ?: 'router';
+        $password = getenv('DB_PASSWORD') ?: 'secret';
+
         $log->debug("Getting DB config");
-        $log->debug('db host: ' . getenv('DB_HOST'));
-        $log->debug('db name: ' . getenv('DB_NAME'));
-        $log->debug('db user: ' . getenv('DB_USER'));
+        $log->debug('db host: ' . $host);
+        $log->debug('db name: ' . $dbname);
+        $log->debug('db user: ' . $username);
         return [
-            'host' => getenv('DB_HOST'),
-            'dbname' => getenv('DB_NAME'),
-            'username' => getenv('DB_USER'),
-            'password' => getenv('DB_PASSWORD'),
+            'host' => $host,
+            'dbname' => $dbname,
+            'username' => $username,
+            'password' => $password,
             'prefix' => 'inbound_',
             'engine' => 'mysql'
         ];

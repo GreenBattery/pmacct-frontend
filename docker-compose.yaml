@@ -54,3 +54,35 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
+  stats-day-calc:
+    build:
+      context: .
+      dockerfile: ./src/batch/stats-day-calc/Dockerfile
+    container_name: pmacct-stats-day-calc
+    profiles:
+      - batch
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_USER: ${DB_USER:-router}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      DB_NAME: ${DB_NAME:-router}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  stats-month-calc:
+    build:
+      context: .
+      dockerfile: ./src/batch/stats-month-calc/Dockerfile
+    container_name: pmacct-stats-month-calc
+    profiles:
+      - batch
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_USER: ${DB_USER:-router}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      DB_NAME: ${DB_NAME:-router}
+    depends_on:
+      db:
+        condition: service_healthy

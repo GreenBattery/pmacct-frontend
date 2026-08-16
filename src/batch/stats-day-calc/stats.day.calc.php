@@ -47,10 +47,10 @@ $oa = [
 ];
 $options = getopt("", $oa);
 
-$dbUser = getenv("DB_USER");
-$dbPassword = getenv("DB_PASSWORD");
-$dbHost = getenv("DB_HOST");
-$dbName = getenv("DB_NAME");
+$dbUser = getenv("DB_USER") ?: 'router';
+$dbPassword = getenv("DB_PASSWORD") ?: 'secret';
+$dbHost = getenv("DB_HOST") ?: 'db';
+$dbName = getenv("DB_NAME") ?: 'router';
 
 try{
     $db = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPassword);
