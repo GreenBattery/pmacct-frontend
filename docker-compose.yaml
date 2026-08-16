@@ -1,10 +1,56 @@
 version: "3.8"
 
 services:
-  stats-view:
-    build: .
+  db:
+    image: mysql:8.0
+    container_name: pmacct-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secretroot}
+      MYSQL_DATABASE: ${DB_NAME:-router}
+      MYSQL_USER: ${DB_USER:-router}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-secretroot}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  nfacctd:
+    build:
+      context: .
+      dockerfile: docker/nfacctd/Dockerfile
+    container_name: pmacct-nfacctd
     restart: unless-stopped
     ports:
-      - "80:80"
-    env_file:
-      - .env
+      - "${NFACCTD_PORT:-2055}:2055/udp"
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER:-router}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      DB_NAME: ${DB_NAME:-router}
+      NFACCTD_PORT: 2055
+      LOCAL_SUBNET: ${LOCAL_SUBNET:-192.168.1.0/24}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  stats-view:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pmacct-stats-view
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER:-router}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      DB_NAME: ${DB_NAME:-router}
+    depends_on:
+      db:
+        condition: service_healthy

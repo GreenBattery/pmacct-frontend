@@ -5,3 +5,4 @@ template-cache/*
 template-config/*
 .env
 vendor/
+data/

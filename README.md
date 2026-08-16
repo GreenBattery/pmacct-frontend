@@ -2,7 +2,41 @@
 
 Quick statistics frontend for [pmacct](http://www.pmacct.net/). 
 
-# Usage
+# Docker Compose Setup (Recommended)
+
+The included `docker-compose.yaml` provides a fully self-contained stack containing:
+- **`db`**: MySQL database service (isolated internally, not exposed on external host ports).
+- **`nfacctd`**: NetFlow accounting daemon listening on UDP port `2055` to collect traffic flow information directly from your router/exporters.
+- **`stats-view`**: The Apache/PHP web interface on port `80`.
+- **`stats-day-calc` & `stats-month-calc`**: On-demand or scheduled calculation jobs.
+
+### Running the Stack
+
+1. Copy `.env.example` to `.env` and customize as needed:
+   ```bash
+   cp .env.example .env
+   ```
+2. Start the self-contained services:
+   ```bash
+   docker compose up -d
+   ```
+3. Send NetFlow traffic from your router or flow exporter to port `2055/udp` on this host.
+4. Access the web interface at `http://localhost`.
+
+### Running Aggregation Batch Jobs
+
+To run daily or monthly calculation jobs against the internal database:
+```bash
+# Run daily statistics calculation
+docker compose run --rm stats-day-calc
+
+# Run monthly statistics calculation
+docker compose run --rm stats-month-calc
+```
+
+---
+
+# Manual / Standalone Usage
 
 To use this, you will need Mysql and pmacct. Pmacct collects the relevant statistics
 using the pcap module and stores them in mysql in a bespoke fashion as specified in the

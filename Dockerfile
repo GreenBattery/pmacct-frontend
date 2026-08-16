@@ -18,7 +18,7 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 COPY ./src/www ./
 COPY ./src/includes/views ../includes/views
 COPY ./src/lib ./lib
-COPY ./vendor ./vendor
+# COPY ./vendor ./vendor
 # COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN chown -R www-data:www-data /var/www/

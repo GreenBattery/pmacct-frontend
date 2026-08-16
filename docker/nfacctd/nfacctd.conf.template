@@ -1,0 +1,32 @@
+! nfacctd configuration template
+daemonize: false
+debug: false
+pidfile: /var/run/nfacctd.pid
+syslog: daemon
+
+! interested in in and outbound traffic
+aggregate[in]: src_host, dst_host, proto, tag, src_mac, dst_mac, vlan, src_port, dst_port
+aggregate_filter[in]: dst net ${LOCAL_SUBNET}
+
+aggregate[out]: src_host, dst_host, proto, tag, src_mac, dst_mac, vlan, src_port, dst_port
+aggregate_filter[out]: src net ${LOCAL_SUBNET}
+
+plugins: mysql[in], mysql[out]
+
+sql_user: ${DB_USER}
+sql_passwd: ${DB_PASSWORD}
+sql_db: ${DB_NAME}
+sql_host: ${DB_HOST}
+
+sql_optimize_clauses: true
+
+nfacctd_port: ${NFACCTD_PORT}
+sql_refresh_time: 120
+sql_history: 10m
+sql_history_roundoff: mh
+sql_table_version: 2
+
+sql_table[in]: inbound_%m%Y
+sql_table[out]: outbound_%m%Y
+sql_table_schema[in]: /etc/pmacct/inbound.sql
+sql_table_schema[out]: /etc/pmacct/outbound.sql
