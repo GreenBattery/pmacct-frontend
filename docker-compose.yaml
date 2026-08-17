@@ -39,6 +39,8 @@ services:
       NFACCTD_PORT: 2055
       LOCAL_SUBNET: ${LOCAL_SUBNET:-192.168.1.0/24}
       LOCAL_SUBNET_V6: ${LOCAL_SUBNET_V6:-fd00::/8}
+      NFACCTD_FILTER_IN: ${NFACCTD_FILTER_IN:-}
+      NFACCTD_FILTER_OUT: ${NFACCTD_FILTER_OUT:-}
     depends_on:
       db:
         condition: service_healthy
