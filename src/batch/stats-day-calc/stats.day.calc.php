@@ -68,9 +68,9 @@ $logger->info("Starting run...");
 if (empty($options) || array_key_exists('help', $options)) {
     echo "
     My job is to precompute the bandwidth stats and aggregate them by month.
-    
+
     Usage: Execute me as `php /path/to/me.php` with any of the following options:
-        --all to calculate everything 
+        --all to calculate everything
         --current for day
         --day=2018-05-22 to calculate a specific month, in this case, 22nd May 2018.\n";
 }
@@ -89,12 +89,12 @@ if (isset($options['all'])) {
     $requestedDay = DateTimeImmutable::createFromFormat("Y-m-d", $inputDate);
 }
 //calculate for requested date
-    
+
 if ($requestedDay === false) {
     echo "Input date could not be parsed. Expect Y-m-d";
     exit(1);
 }
-    
+
 $tableSuffix = $requestedDay->format('mY');
 $requestedDayString = $requestedDay->format('Y-m-d');
 
@@ -110,7 +110,7 @@ try {
     R::begin(); //start transaction.
 
     $sql ="
-    SELECT 
+    SELECT
         ip_src AS ip,
         mac_src as mac,
         SUM(bytes) AS bytes
@@ -125,15 +125,13 @@ try {
 
 //the where clause is hard-coded, can be made a user-configurable value.
     $sql ="
-    SELECT 
-        IF(post_nat_ip_dst = 0,ip_dst, post_nat_ip_dst) AS ip,
+    SELECT
+        ip_dst AS ip,
         SUM(bytes) AS bytes
     FROM $tableIn
     WHERE
-        (post_nat_ip_dst = 0 
-        OR post_nat_ip_dst LIKE '192.168.%.%')
+        ip_dst LIKE '192.168.%.%'
         AND stamp_inserted BETWEEN :start AND :end
-        
     GROUP BY
         ip
 ";
@@ -161,10 +159,10 @@ try {
     $logger->info("Pushing updated stats to DB");
 
     //first delete all stats for this month before we insert the newly calculated stats
-    $query = "DELETE FROM 
-            main_summary 
+    $query = "DELETE FROM
+            main_summary
         WHERE
-            duration_type = 'day' AND 
+            duration_type = 'day' AND
             duration = :duration
         ";
     $res = R::exec($query, ['duration' => $requestedDayString]);
@@ -206,4 +204,3 @@ try {
     R::rollback();
     exit(1);
 }
-
