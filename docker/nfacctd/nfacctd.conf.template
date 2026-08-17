@@ -10,6 +10,8 @@ log_timestamps_format: %Y-%m-%d %H:%M:%S
 ! Print periodic flow and packet statistics to container stdout every 60 seconds
 nfacctd_st_time: 30
 
+nfacctd_renormalize: true
+
 ! interested in in and outbound traffic
 aggregate[in]: src_host, dst_host, proto, tag, src_mac, dst_mac, vlan, src_port, dst_port
 aggregate_filter[in]: ${NFACCTD_FILTER_IN}
