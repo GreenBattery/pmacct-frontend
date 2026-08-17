@@ -16,7 +16,7 @@ plugins: mysql[in], mysql[out], print[debug]
 
 ! --- Debug Plugin Configuration ---
 ! Use the same aggregation primitives so you see the same fields
-aggregate[debug]: src_host, dst_host, proto, src_port, dst_port, direction
+aggregate[debug]: src_host, dst_host, proto, src_port, dst_port, tag
 
 ! Filter for just your local IP so the logs aren't overwhelmed,
 ! but do NOT specify 'src' or 'dst' so we catch it regardless of direction.
