@@ -86,7 +86,7 @@ if ($month === null) {
             SUM(bytes) AS bytes
         FROM $table_out
         WHERE
-        post_nat_ip_dst NOT LIKE '192.168.%.%'
+        AND (post_nat_ip_dst NOT LIKE '192.168.%.%' OR post_nat_ip_dst = '')
         AND (ip_src LIKE '192.168.%.%' OR ip_src LIKE '%:%')
         GROUP BY
             ip, mac
