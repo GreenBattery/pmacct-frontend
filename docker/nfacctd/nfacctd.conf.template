@@ -28,8 +28,8 @@ sql_optimize_clauses: true
 
 nfacctd_port: ${NFACCTD_PORT}
 sql_refresh_time: 60
-sql_history: 10m
-sql_history_roundoff: m10
+sql_history: 5m
+sql_history_roundoff: mh
 sql_table_version: 2
 
 sql_table[in]: inbound_%m%Y
