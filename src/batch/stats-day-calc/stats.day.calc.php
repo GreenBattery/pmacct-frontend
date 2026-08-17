@@ -117,6 +117,9 @@ try {
     FROM $tableOut
     WHERE
         stamp_inserted BETWEEN '$requestedDayString 00:00:00' AND '$requestedDayString 23:59:59'
+           AND post_nat_ip_dst NOT LIKE '192.168.%.%'
+           AND (ip_src LIKE '192.168.%.%' OR ip_src LIKE '%:%')
+
     GROUP BY
         ip, mac
 ";
@@ -126,11 +129,12 @@ try {
 //the where clause is hard-coded, can be made a user-configurable value.
     $sql ="
     SELECT
-        ip_dst AS ip,
+        IFNULL(post_nat_ip_dst, ip_dst) AS ip,
         SUM(bytes) AS bytes
     FROM $tableIn
     WHERE
-        ip_dst LIKE '192.168.%.%'
+        (post_nat_ip_dst  LIKE '192.168.%.%' OR
+        (post_nat_ip_dst = '' AND ip_dst LIKE '%:%')) -- catch IPv6 too
         AND stamp_inserted BETWEEN :start AND :end
     GROUP BY
         ip

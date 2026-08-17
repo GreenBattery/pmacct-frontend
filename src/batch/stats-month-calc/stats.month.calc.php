@@ -47,9 +47,9 @@ R::setup( "mysql:host=$dbHost;dbname=$dbName",
 if (empty($options) || array_key_exists('help', $options)) {
     echo "
     My job is to precompute the bandwidth stats and aggregate them by month.
-    
+
     Usage: Execute me as `php /path/to/me.php` with any of the following options:
-        --all to calculate everything 
+        --all to calculate everything
         --current for current month
         --month=2018-05 to calculate a specific month, in this case, May 2018.\n";
 }
@@ -80,11 +80,14 @@ if ($month === null) {
     $duration = $mm . (string) $d['year'];
 
     $sql ="
-        SELECT 
+        SELECT
             ip_src AS ip,
             mac_src as mac,
             SUM(bytes) AS bytes
         FROM $table_out
+        WHERE
+        post_nat_ip_dst NOT LIKE '192.168.%.%'
+        AND (ip_src LIKE '192.168.%.%' OR ip_src LIKE '%:%')
         GROUP BY
             ip, mac
 	";
@@ -95,13 +98,13 @@ if ($month === null) {
 
     //the where clause is hard-coded, can be made a user-configurable value.
     $sql ="
-        SELECT 
+        SELECT
             IF(post_nat_ip_dst = 0,ip_dst, post_nat_ip_dst) AS ip,
             SUM(bytes) AS bytes
         FROM $table_in
         WHERE
-            post_nat_ip_dst = 0 
-            OR post_nat_ip_dst LIKE '192.168.1.%'
+        (post_nat_ip_dst  LIKE '192.168.%.%' OR
+        (post_nat_ip_dst = '' AND ip_dst LIKE '%:%')) -- catch IPv6 too
         GROUP BY
             ip
 	";
@@ -128,10 +131,10 @@ if ($month === null) {
     echo "Pushing updated stats to DB\n";
 
     //first delete all stats for this month before we insert the newly calculated stats
-    $query = "DELETE FROM 
-               main_summary 
+    $query = "DELETE FROM
+               main_summary
             WHERE
-                duration_type = 'month' AND 
+                duration_type = 'month' AND
                 duration = :duration
            ";
     $res = R::exec($query, ['duration' => $duration]);
@@ -168,4 +171,3 @@ if ($month === null) {
     }
 
 }
-
