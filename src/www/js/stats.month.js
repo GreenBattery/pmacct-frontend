@@ -73,6 +73,11 @@ $(document).ready(function() {
     };
     $('#monthSummary').DataTable(opts);
 
+    // Prevent clicks inside IP details collapsible from triggering DataTables row expansion
+    $('#monthSummary').on('click', '.ip-details, .ip-details *', function(e) {
+        e.stopPropagation();
+    });
+
     $('#monthSummary').on('init.dt', function() {
 
     });

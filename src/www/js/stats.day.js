@@ -69,6 +69,11 @@ $(document).ready(function() {
     };
     $('#daySummary').DataTable(opts);
 
+    // Prevent clicks inside IP details collapsible from triggering DataTables row expansion
+    $('#daySummary').on('click', '.ip-details, .ip-details *', function(e) {
+        e.stopPropagation();
+    });
+
     $('.dayNav').click(function(evt) {
         //console.log(evt);
         let me = evt.target;

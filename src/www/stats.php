@@ -82,6 +82,10 @@ function getDay()
         $bwStats[$k]["bytes_out_formatted"] = formatBytes($v["bytes_out"]);
         $bwStats[$k]["aggregate_formatted"] = formatBytes($v["total"]);
 
+        $ipList = !empty($v["ip"]) ? array_values(array_filter(array_map("trim", explode(",", $v["ip"])), "strlen")) : [];
+        $bwStats[$k]["ip_primary"] = array_slice($ipList, 0, 2);
+        $bwStats[$k]["ip_extra"] = array_slice($ipList, 2);
+
         $totals["bytes_in"] += $v["bytes_in"];
         $totals["bytes_out"] += $v["bytes_out"];
         $totals["aggregate"] += $v["total"];
@@ -155,6 +159,10 @@ function getMonth()
         $bwStats[$k]["bytes_in"] = $pstat["bytes_in"];
         $bwStats[$k]["bytes_out"] = $pstat["bytes_out"];
         $bwStats[$k]["total"] = $pstat["bytes_in"] + $pstat["bytes_out"];
+
+        $ipList = !empty($pstat["ip"]) ? array_values(array_filter(array_map("trim", explode(",", $pstat["ip"])), "strlen")) : [];
+        $bwStats[$k]["ip_primary"] = array_slice($ipList, 0, 2);
+        $bwStats[$k]["ip_extra"] = array_slice($ipList, 2);
 
         $totals["bytes_in"] += $pstat["bytes_in"];
         $totals["bytes_out"] += $pstat["bytes_out"];

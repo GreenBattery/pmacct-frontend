@@ -44,7 +44,7 @@
             <div class="card-header">Details</div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="monthSummary" class="table table-striped dt-responsive nowrap" style="width:100%">
+                    <table id="monthSummary" class="table table-striped dt-responsive" style="width:100%">
                         <thead>
                         <tr>
                             <th>Hostname</th>
@@ -56,8 +56,25 @@
                         <tbody>
                         {foreach from=$data.stats key=ip item=stat}
                             <tr>
-                                <td>
-                                    <span class="badge text-bg-info">{$stat.hostname}</span> <span>{$stat.ip}</span>
+                                <td class="text-break">
+                                    <div>
+                                        <span class="badge text-bg-info">{$stat.hostname|default:"-"}</span>
+                                        {foreach from=$stat.ip_primary item=single_ip}
+                                            <span class="font-monospace small me-1">{$single_ip}</span>
+                                        {/foreach}
+                                    </div>
+                                    {if !empty($stat.ip_extra)}
+                                        <details class="ip-details mt-1 small" onclick="event.stopPropagation();">
+                                            <summary class="text-muted text-decoration-underline" style="cursor: pointer;" onclick="event.stopPropagation();">
+                                                +{$stat.ip_extra|count} more IP{if $stat.ip_extra|count > 1}s{/if}
+                                            </summary>
+                                            <div class="text-muted font-monospace ps-2 border-start mt-1">
+                                                {foreach from=$stat.ip_extra item=single_ip}
+                                                    <div>{$single_ip}</div>
+                                                {/foreach}
+                                            </div>
+                                        </details>
+                                    {/if}
                                 </td>
                                 <td>{$stat.bytes_in}</td>
                                 <td>{$stat.bytes_out}</td>
