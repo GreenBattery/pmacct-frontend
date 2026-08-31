@@ -43,35 +43,38 @@
         <div id="monthcontainer" class="card">
             <div class="card-header">Details</div>
             <div class="card-body">
-                <table id="monthSummary" class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Hostname</th>
-                        <th>In</th>
-                        <th>Out</th>
-                        <th>Total</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach from=$data.stats key=ip item=stat}
+                <div class="table-responsive">
+                    <table id="monthSummary" class="table table-striped dt-responsive nowrap" style="width:100%">
+                        <thead>
                         <tr>
-                            <td class="w-75">
-                            <span class="badge text-bg-info">{$stat.hostname}</span> <span>{$stat.ip}</span></td>
-                            <td>{$stat.bytes_in}</td>
-                            <td>{$stat.bytes_out}</td>
-                            <td>{$stat.total}</td>
+                            <th>Hostname</th>
+                            <th>In</th>
+                            <th>Out</th>
+                            <th>Total</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="1">Totals</td>
-                        <td>{$data.totals.bytes_in}</td>
-                        <td>{$data.totals.bytes_out}</td>
-                        <td>{$data.totals.total}</td>
-                    </tr>
-                    </tfoot>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach from=$data.stats key=ip item=stat}
+                            <tr>
+                                <td>
+                                    <span class="badge text-bg-info">{$stat.hostname}</span> <span>{$stat.ip}</span>
+                                </td>
+                                <td>{$stat.bytes_in}</td>
+                                <td>{$stat.bytes_out}</td>
+                                <td>{$stat.total}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="1">Totals</td>
+                            <td>{$data.totals.bytes_in}</td>
+                            <td>{$data.totals.bytes_out}</td>
+                            <td>{$data.totals.total}</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
 
         </div>

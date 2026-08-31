@@ -2,13 +2,15 @@ $(document).ready(function() {
     console.log('day Ready');
     //table setup.
     var opts = {
+        responsive: true,
         order: [[3, "desc"]],
         deferRender: true,
-        autoWidth: true,
+        autoWidth: false,
         columns: [
-            {data: 'Hostname'},
+            {data: 'Hostname', responsivePriority: 1},
             {
                 data: 'in',
+                responsivePriority: 3,
                 render: function(data, type, row) {
                     if (type === "display") {
                         return formatBytes(data);
@@ -20,6 +22,7 @@ $(document).ready(function() {
             },
             {
                 data: 'out',
+                responsivePriority: 4,
                 render: function(data, type, row) {
                     if (type === "display") {
                         return formatBytes(data);
@@ -31,6 +34,7 @@ $(document).ready(function() {
             },
             {
                 data: 'total',
+                responsivePriority: 2,
                 render: function(data, type, row) {
                     if (type === "display") {
                         console.log("rendering total value");
