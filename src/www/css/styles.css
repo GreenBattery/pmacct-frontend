@@ -3,6 +3,31 @@
  * @author Daniel15 <daniel at dan.cx>
  */
 
+ @font-face {
+     font-family: 'Atkinson Hyperlegible';
+     src: url('../fonts/AtkinsonHyperlegible-Regular.ttf') format('ttf'),
+     url('../fonts/AtkinsonHyperlegible-Bold.ttf') format('ttf');
+     font-style: normal;
+     font-display: swap;
+ }
+
+ @font-face{
+     font-family: 'Atkinson Hyperlegible';
+     src: url('../fonts/AtkinsonHyperlegible-Italic.ttf') format('ttf'),
+     url('../fonts/AtkinsonHyperlegible-BoldItalic.ttf') format('ttf'),;
+     font-style: italic;
+     font-display: swap;
+ }
+
+ /* Bootstrap 5 variable override & Body fallback */
+   :root {
+     --bs-body-font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+   }
+
+   body {
+     font-family: 'Atkinson Hyperlegible', system-ui, -apple-system, sans-serif;
+   }
+
 body
 {
 	padding-top: 100px;

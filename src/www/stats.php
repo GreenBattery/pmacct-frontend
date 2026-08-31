@@ -2,11 +2,9 @@
 date_default_timezone_set("utc");
 require "./vendor/autoload.php";
 
-use nucc1\Hostnames;
 use nucc1\Config;
 use RedBeanPHP\R as R;
 
-$hostnames = Hostnames::read_leases();
 $dbConfig = Config::getDBConfig();
 $dbname = $dbConfig["dbname"];
 $dbhost = $dbConfig["host"];
@@ -62,7 +60,7 @@ function index()
  */
 function getDay()
 {
-    global $s, $tableIn, $table_out, $hostnames, $summaryQuery;
+    global $s, $tableIn, $table_out, $summaryQuery;
     $s->caching = 0;
 
     $date = !empty($_GET["date"]) ? (int) $_GET["date"] : strtotime("today");
@@ -109,7 +107,7 @@ function getDay()
  */
 function getMonth()
 {
-    global $s, $hostnames, $summaryQuery;
+    global $s, $summaryQuery;
     // Querystring parameters
     $year = !empty($_GET["year"]) ? (int) $_GET["year"] : date("Y");
     $month = !empty($_GET["month"]) ? (int) $_GET["month"] : date("m");

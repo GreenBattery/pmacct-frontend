@@ -18,7 +18,7 @@
             </div>
             <div class="card">
                 <div class="card-header">Upload</div>
-                <div class="card-body">{$data.totals.bytes_out_formatted}</div>
+                <div class="card-body"><i class="bi bi-download"></i>{$data.totals.bytes_out_formatted}</div>
             </div>
             <div class="card">
                 <div class="card-header">Aggreg</div>
