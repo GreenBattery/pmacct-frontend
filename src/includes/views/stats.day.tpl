@@ -13,16 +13,15 @@
     <div class="col">
         <div class="card-group card-header-tabs">
             <div class="card">
-                <div class="card-header">Downld</div>
-                <div class="card-body">{$data.totals.bytes_in_formatted}</div>
-            </div>
-            <div class="card">
-                <div class="card-header">Upload</div>
-                <div class="card-body"><i class="bi bi-download"></i>{$data.totals.bytes_out_formatted}</div>
-            </div>
-            <div class="card">
-                <div class="card-header">Aggreg</div>
-                <div class="card-body">{$data.totals.aggregate_formatted}</div>
+                <div class="card-header">Data Usage</div>
+                <div class="card-body text-end">
+                    {$data.totals.bytes_in_formatted}<i class="bi bi-upload"></div>
+                <div class="w-full text-end">
+                    <span class="border-bottom"><i class="bi bi-download"></i>{$data.totals.bytes_out_formatted} <br /></span>
+                </div>
+                <div class="border-bottom w-full text-end"></div>
+                    {$data.totals.aggregate_formatted}
+                </div>
             </div>
         </div>
     </div>
