@@ -27,7 +27,7 @@
                                 class="bi bi-upload"></i>
                         </div>
                         <div class="border-bottom w-full text-end">
-                            <span class="font-monospace">{$data.totals.aggregate_formatted}</span> &nbsp; <i tooltip="Total" class="bi bi-calendar3"
+                            <span class="font-monospace">{$data.totals.aggregate_formatted}</span> &nbsp; <i tooltip="Total" class="bi bi-calendar3"></i>
                         </div>
                 </div>
 
