@@ -4,7 +4,7 @@ $(document).ready(function() {
     var opts = {
         order: [[3, "desc"]],
         deferRender: true,
-        autoWidth: false,
+        autoWidth: true,
         columns: [
             {data: 'Hostname'},
             {

@@ -72,9 +72,9 @@ function formatBytes(bytes) {
     var precision = 2;
 
     if (bytes <= 0){
-        return "0 kB"
+        return "0 kiB"
     }
-    var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB'],
+    var units = ['bytes', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'],
         number = Math.floor(Math.log(bytes) / Math.log(1024));
 
 

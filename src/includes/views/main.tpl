@@ -5,7 +5,7 @@
         <title>{block name=title}{/block}</title>
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bootstrap-icons-1.1.13.min.css">
-        <link rel="stylesheet" href="css/styles.css">
+        <link rel="stylesheet" href="css/styles.css?v={'css/styles.css'|filemtime}">
         <script src="js/jquery.js"></script>
         {block name=scriptFiles}{/block}
         <script src="js/bootstrap.js"></script>

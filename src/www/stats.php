@@ -87,9 +87,15 @@ function getDay()
         $totals["aggregate"] += $v["total"];
     }
 
-    $totals["bytes_in_formatted"] = formatBytes($totals["bytes_in"]);
-    $totals["bytes_out_formatted"] = formatBytes($totals["bytes_out"]);
-    $totals["aggregate_formatted"] = formatBytes($totals["aggregate"]);
+    $formatted_in = formatBytes($totals["bytes_in"]);
+    $totals["bytes_in_formatted"] = $formatted_in['value'] . ' ' . $formatted_in['unit_string'];
+
+    $formatted_out = formatBytes($totals["bytes_out"], $formatted_in['unit_index']);
+    $totals["bytes_out_formatted"] = $formatted_out['value'] . ' ' . $formatted_out['unit_string'];
+
+    $formatted_total = formatBytes($totals["aggregate"], $formatted_in['unit_index']);
+    $totals["aggregate_formatted"] = $formatted_total['value'] . ' ' . $formatted_total['unit_string'];
+
 
     $do = new DateTime("@$date");
     $data = ["stats" => $bwStats, "totals" => $totals];
@@ -155,9 +161,14 @@ function getMonth()
         $totals["aggregate"] += $pstat["total"];
     }
 
-    $totals["bytes_in_formatted"] = formatBytes($totals["bytes_in"]);
-    $totals["bytes_out_formatted"] = formatBytes($totals["bytes_out"]);
-    $totals["aggregate_formatted"] = formatBytes($totals["aggregate"]);
+    $formatted_in = formatBytes($totals["bytes_in"]);
+    $totals["bytes_in_formatted"] = $formatted_in['value'] . ' ' . $formatted_in['unit_string'];
+
+    $formatted_out = formatBytes($totals["bytes_out"], $formatted_in['unit_index']);
+    $totals["bytes_out_formatted"] = $formatted_out['value'] . ' ' . $formatted_out['unit_string'];
+
+    $formatted_total = formatBytes($totals["aggregate"], $formatted_in['unit_index']);
+    $totals["aggregate_formatted"] = $formatted_total['value'] . ' ' . $formatted_total['unit_string'];
 
     $s->assign("data", ["stats" => $bwStats, "totals" => $totals]);
     $s->assign("date", $cd->format("F Y"));
@@ -167,18 +178,30 @@ function getMonth()
 
 /**
  * @param $bytes
- * @param int $precision
- * @return string
+ * @param int | null $unit
+ * @return array{
+ *  value: string,
+ *  unit_string: string,
+ *  unit_index: int
+ * }
  */
-function formatBytes($bytes)
-{
-    $units = ["B", "KiB", "MiB", "GiB", "TiB"];
+ function formatBytes($bytes, int | null $unit = null)
+ {
+     $units = ["B", "KiB", "MiB", "GiB", "TiB"];
 
-    $bytes = max($bytes, 0);
-    $power = floor(($bytes ? log($bytes) : 0) / log(1024));
-    $power = min($power, count($units) - 1);
+     $bytes = max($bytes, 0);
+     if ($unit !== null && $unit < count($units) && $unit >= 0) {
+         $power = $unit;
+     } else {
+         $power = floor(($bytes ? log($bytes) : 0) / log(1024));
+         $power = min($power, count($units) - 1);
+     }
 
-    $bytes /= pow(1024, $power);
+     $bytes /= pow(1024, $power);
 
-    return round($bytes, 4) . " " . $units[$power];
-}
+     return [
+         'value' => number_format($bytes, 2, '.', ','),
+         'unit_string' => $units[$power],
+         'unit_index' => $power,
+     ];
+ }

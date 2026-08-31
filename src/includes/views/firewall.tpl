@@ -6,7 +6,7 @@
 {/block}
 
 {block name=scriptFiles}
-    <script src="lib/DataTables/datatables.js" type="text/javascript"></script>
+    <script src="lib/DataTables/datatables.min.js" type="text/javascript"></script>
     <script src="js/firewall.js" type="text/javascript"></script>
 
 {/block}
