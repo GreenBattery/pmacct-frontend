@@ -11,17 +11,26 @@
 
 <div class="row">
     <div class="col">
-        <div class="card-group card-header-tabs">
+
             <div class="card">
                 <div class="card-header">Data Usage</div>
-                <div class="card-body text-end">
-                    {$data.totals.bytes_in_formatted}<i class="bi bi-upload"></div>
-                <div class="w-full text-end">
-                    <span class="border-bottom"><i class="bi bi-download"></i>{$data.totals.bytes_out_formatted} <br /></span>
+                <div class="card-body">
+                    <div class="w-full text-end">
+                        <span class="font-monospace">{$data.totals.bytes_in_formatted}</span> &nbsp; <i
+                            class="bi bi-download" tooltip="Download"></i>
+                    </div>
+
+
+                        <div class="w-full text-end">
+                            <span class="font-monospace">{$data.totals.bytes_out_formatted}</span> &nbsp; <i
+                                tooltip="Upload"
+                                class="bi bi-upload"></i>
+                        </div>
+                        <div class="border-bottom w-full text-end">
+                            <span class="font-monospace">{$data.totals.aggregate_formatted}</span> &nbsp; <i tooltip="Total" class="bi bi-calendar3"
+                        </div>
                 </div>
-                <div class="border-bottom w-full text-end"></div>
-                    {$data.totals.aggregate_formatted}
-                </div>
+
             </div>
         </div>
     </div>
