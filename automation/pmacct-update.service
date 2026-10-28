@@ -1,0 +1,16 @@
+[Unit]
+Description=Update pmacct-frontend containers (patch and security updates)
+After=network-online.target docker.service
+Wants=network-online.target docker.service
+
+[Service]
+Type=oneshot
+# Adjust WorkingDirectory and ExecStart path if the repository is deployed elsewhere
+WorkingDirectory=%h/Documents/Projects/pmacct-frontend
+ExecStart=%h/Documents/Projects/pmacct-frontend/automation/update-containers.sh
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=1800
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Weekly schedule for pmacct-frontend container updates
+Requires=pmacct-update.service
+
+[Timer]
+# Runs every Sunday at 02:00:00 local time
+OnCalendar=Sun *-*-* 02:00:00
+# Run immediately upon boot if the scheduled trigger was missed while host was offline
+Persistent=true
+# Random delay of up to 15 minutes to prevent exact-second stampedes
+RandomizedDelaySec=900
+
+[Install]
+WantedBy=timers.target
