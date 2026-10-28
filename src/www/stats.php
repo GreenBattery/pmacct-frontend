@@ -20,6 +20,8 @@ $s->setTemplateDir(__DIR__ . "/../includes/views/");
 $s->setCompileDir($_SERVER["DOCUMENT_ROOT"] . "/../template-cache/");
 $s->setConfigDir($_SERVER["DOCUMENT_ROOT"] . "/../template-config/");
 $s->setCacheDir($_SERVER["DOCUMENT_ROOT"] . "/../template-cache/");
+// Register filemtime as a modifier
+$s->registerPlugin('modifier', 'filemtime', 'filemtime');
 
 $summaryQuery = "
     SELECT

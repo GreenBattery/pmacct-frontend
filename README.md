@@ -21,7 +21,58 @@ The included `docker-compose.yaml` provides a fully self-contained stack contain
    docker compose up -d
    ```
 3. Send NetFlow traffic from your router or flow exporter to port `2055/udp` on this host.
-4. Access the web interface at `http://localhost`.
+4. Access the web interface at `http://localhost` (or `http://localhost:<WEB_PORT>` as defined in your `.env`).
+
+### Local Development (Live Reloading)
+
+For local development without rebuilding the Docker container after every code change:
+
+1. Create a `docker-compose.override.yaml` in the project root (ignored by git):
+   ```yaml
+   version: "3.8"
+
+   services:
+     stats-view:
+       volumes:
+         - ./src/www:/var/www/html
+         - /var/www/html/vendor
+         - ./src/includes/views:/var/www/includes/views
+         - ./src/lib/Config.php:/var/www/html/lib/Config.php
+         - ./src/lib/Hostnames.php:/var/www/html/lib/Hostnames.php
+         - ./docker/php/dev.ini:/usr/local/etc/php/conf.d/dev.ini:ro
+
+     stats-day-calc:
+       volumes:
+         - ./src/lib:/var/www/lib
+         - ./src/batch/stats-day-calc/stats.day.calc.php:/var/www/stats.day.calc.php
+         - ./docker/php/dev.ini:/usr/local/etc/php/conf.d/dev.ini:ro
+
+     stats-month-calc:
+       volumes:
+         - ./src/lib:/var/www/lib
+         - ./src/batch/stats-month-calc/stats.month.calc.php:/var/www/stats.month.calc.php
+         - ./docker/php/dev.ini:/usr/local/etc/php/conf.d/dev.ini:ro
+   ```
+2. Recreate the containers to apply the mounts:
+   ```bash
+   docker compose up -d
+   ```
+3. Any edits made to files in `src/www/`, `src/includes/views/`, or `src/lib/` will reload immediately on browser refresh. Verbose PHP error reporting is enabled via `docker/php/dev.ini`.
+
+### Useful Commands
+
+- **View live PHP / Apache logs**:
+  ```bash
+  docker compose logs -f stats-view
+  ```
+- **Open a shell inside the web container**:
+  ```bash
+  docker compose exec stats-view bash
+  ```
+- **Stop the stack**:
+  ```bash
+  docker compose down
+  ```
 
 ### Running Aggregation Batch Jobs
 
